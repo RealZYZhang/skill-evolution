@@ -1,0 +1,18 @@
+{
+  "schema": "prompt.research_harness_context.v1",
+  "title": "Prompt-visible multi-Trajectory research Harness context",
+  "version": "1",
+  "tool_schema_version": "1",
+  "prompt_visible_extensions": [
+    {
+      "name": "research_tools",
+      "file": "research-tools.ts",
+      "sha256": "eae4b5a5e8192f80c5a690ad91411183cd173b13ca123d61452bf283f0e380c7"
+    },
+    {
+      "name": "research_output",
+      "file": "research-output.ts",
+      "sha256": "e3ba8ea38a35c6856e94c7fc78c886dd7bcbedbd6834de0558d5443f3f95a529"
+    }
+  ]
+}

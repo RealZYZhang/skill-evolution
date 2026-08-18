@@ -1,0 +1,10 @@
+{
+  "schema": "prompt.approval.v1",
+  "status": "approved",
+  "prompt_id": "analysis.trajectory-error",
+  "version": "1",
+  "prompt_file": "trajectory-error-analysis-v1.md",
+  "content_sha256": "a75854cc8483464558b44d7ff24a275043c2e5c078bccfb004bf89ac996dee7e",
+  "approved_by": "project-owner",
+  "approved_at": "2026-08-07T06:20:17+00:00"
+}

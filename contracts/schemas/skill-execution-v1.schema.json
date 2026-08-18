@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:skill-evolution:schema:skill-execution:v1",
+  "title": "One immutable-revision Skill execution",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "execution_id",
+    "skill_id",
+    "revision_id",
+    "status",
+    "origin",
+    "execution_set_id",
+    "comparison_id",
+    "started_at",
+    "ended_at",
+    "duration_ms",
+    "task",
+    "inputs",
+    "outputs",
+    "supporting_artifacts",
+    "trajectory",
+    "session",
+    "setup",
+    "legacy"
+  ],
+  "properties": {
+    "schema": {"const": "skill.execution.v1"},
+    "execution_id": {"type": "string", "minLength": 1},
+    "skill_id": {"type": "string", "minLength": 1},
+    "revision_id": {"type": "string", "minLength": 1},
+    "status": {
+      "enum": [
+        "running",
+        "succeeded",
+        "failed",
+        "interrupted",
+        "orchestration_failed",
+        "indeterminate"
+      ]
+    },
+    "origin": {"enum": ["direct", "replay", "comparison"]},
+    "execution_set_id": {"type": ["string", "null"]},
+    "comparison_id": {"type": ["string", "null"]},
+    "started_at": {"type": ["string", "null"]},
+    "ended_at": {"type": ["string", "null"]},
+    "duration_ms": {"type": ["number", "null"], "minimum": 0},
+    "task": {"type": "object"},
+    "inputs": {"$ref": "#/$defs/artifacts"},
+    "outputs": {"$ref": "#/$defs/artifacts"},
+    "supporting_artifacts": {"$ref": "#/$defs/artifacts"},
+    "trajectory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "schema", "source_format", "sealed"],
+      "properties": {
+        "path": {"type": ["string", "null"]},
+        "schema": {
+          "enum": ["trajectory.actions.v1", "trajectory.actions.v1", null]
+        },
+        "source_format": {"type": "string", "minLength": 1},
+        "sealed": {"type": "boolean"}
+      }
+    },
+    "session": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "status"],
+      "properties": {
+        "path": {"type": ["string", "null"]},
+        "status": {"type": ["string", "null"]}
+      }
+    },
+    "setup": {"type": "object"},
+    "legacy": {"type": ["object", "null"]}
+  },
+  "$defs": {
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["artifact_id", "path", "bytes", "sha256", "media_type"],
+        "properties": {
+          "artifact_id": {"type": "string", "minLength": 1},
+          "path": {"type": "string", "minLength": 1},
+          "bytes": {"type": ["integer", "null"], "minimum": 0},
+          "sha256": {
+            "anyOf": [
+              {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+              {"type": "null"}
+            ]
+          },
+          "media_type": {"type": ["string", "null"]}
+        }
+      }
+    }
+  }
+}

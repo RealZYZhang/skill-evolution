@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skill-evolution.local/schemas/research-validation-benchmark-v1.schema.json",
+  "title": "Hidden single-Agent research validation benchmark",
+  "description": "An owner-approved benchmark frozen before blind multi-Trajectory research begins.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "benchmark_id",
+    "title",
+    "status",
+    "skill_id",
+    "revision_id",
+    "execution_ids",
+    "required_discoveries",
+    "owner",
+    "approved_by",
+    "approved_at"
+  ],
+  "properties": {
+    "schema": {
+      "const": "research.validation_benchmark.v1"
+    },
+    "benchmark_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "const": "approved"
+    },
+    "skill_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "revision_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "execution_ids": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "required_discoveries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "discovery_id",
+          "description",
+          "minimum_supporting_trajectory_count",
+          "required_findings"
+        ],
+        "properties": {
+          "discovery_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minimum_supporting_trajectory_count": {
+            "type": "integer",
+            "minimum": 2
+          },
+          "required_findings": {
+            "type": "array",
+            "minItems": 6,
+            "maxItems": 6,
+            "prefixItems": [
+              {
+                "const": "common_logical_stage"
+              },
+              {
+                "const": "common_purpose"
+              },
+              {
+                "const": "script_or_flow_differences"
+              },
+              {
+                "const": "before_after_effect"
+              },
+              {
+                "const": "non_adopting_trajectories_or_counterexample_scope"
+              },
+              {
+                "const": "raw_evidence_locations"
+              }
+            ],
+            "items": false
+          }
+        }
+      }
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "approved_by": {
+      "type": "string",
+      "minLength": 1
+    },
+    "approved_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

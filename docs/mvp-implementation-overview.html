@@ -1,0 +1,1140 @@
+<!doctype html>
+<!-- Purpose: visual overview of the currently implemented Skill Evolution MVP. -->
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Skill Evolution MVP：这一阶段实现了什么</title>
+  <style>
+    :root {
+      --page: #f4f1ea;
+      --paper: #fffdf8;
+      --ink: #202521;
+      --muted: #5f675f;
+      --line: #d8d5ca;
+      --strong-line: #aaa99f;
+      --accent: #205b48;
+      --accent-soft: #e5f0ea;
+      --done: #205b48;
+      --done-bg: #e5f0ea;
+      --ready: #74520a;
+      --ready-bg: #fff1c9;
+      --partial: #823b2b;
+      --partial-bg: #fbe9e4;
+      --code-bg: #efede7;
+      --shadow: 0 14px 36px rgba(38, 42, 37, 0.08);
+      --radius: 18px;
+      --content: 1180px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% 0%, rgba(32, 91, 72, 0.08), transparent 32rem),
+        var(--page);
+      font-family:
+        -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+        "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      line-height: 1.75;
+    }
+
+    a {
+      color: var(--accent);
+      text-underline-offset: 0.18em;
+    }
+
+    a:hover {
+      text-decoration-thickness: 2px;
+    }
+
+    a:focus-visible,
+    summary:focus-visible {
+      outline: 3px solid rgba(32, 91, 72, 0.35);
+      outline-offset: 3px;
+    }
+
+    code {
+      padding: 0.1em 0.38em;
+      border-radius: 5px;
+      background: var(--code-bg);
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 0.9em;
+    }
+
+    .skip-link {
+      position: fixed;
+      top: 0.75rem;
+      left: 0.75rem;
+      z-index: 50;
+      padding: 0.65rem 0.9rem;
+      border-radius: 8px;
+      color: #fff;
+      background: var(--accent);
+      transform: translateY(-180%);
+      transition: transform 120ms ease;
+    }
+
+    .skip-link:focus {
+      transform: translateY(0);
+    }
+
+    .page-header {
+      padding: 4.5rem 1.5rem 3rem;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 253, 248, 0.72);
+    }
+
+    .header-inner,
+    .layout,
+    .page-footer {
+      width: min(100%, var(--content));
+      margin-inline: auto;
+    }
+
+    .eyebrow {
+      margin: 0 0 0.6rem;
+      color: var(--accent);
+      font-size: 0.82rem;
+      font-weight: 750;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3 {
+      line-height: 1.25;
+      text-wrap: balance;
+    }
+
+    h1 {
+      max-width: 900px;
+      margin: 0;
+      font-size: clamp(2.15rem, 6vw, 4.6rem);
+      letter-spacing: -0.045em;
+    }
+
+    .lead {
+      max-width: 850px;
+      margin: 1.25rem 0 0;
+      color: #3f4740;
+      font-size: clamp(1.08rem, 2vw, 1.35rem);
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem 1.25rem;
+      margin: 1.5rem 0 0;
+      padding: 0;
+      color: var(--muted);
+      list-style: none;
+      font-size: 0.92rem;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(190px, 250px) minmax(0, 1fr);
+      gap: 2rem;
+      padding: 2rem 1.5rem 5rem;
+    }
+
+    .toc {
+      position: sticky;
+      top: 1rem;
+      align-self: start;
+      padding: 1.1rem;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255, 253, 248, 0.88);
+      box-shadow: 0 8px 22px rgba(38, 42, 37, 0.05);
+      backdrop-filter: blur(10px);
+    }
+
+    .toc h2 {
+      margin: 0 0 0.65rem;
+      font-size: 0.95rem;
+    }
+
+    .toc ol {
+      display: grid;
+      gap: 0.48rem;
+      margin: 0;
+      padding-left: 1.25rem;
+      font-size: 0.9rem;
+    }
+
+    main {
+      min-width: 0;
+    }
+
+    main > section {
+      margin-bottom: 2.8rem;
+      scroll-margin-top: 1.25rem;
+    }
+
+    main > section > h2 {
+      margin: 0 0 1rem;
+      font-size: clamp(1.55rem, 3vw, 2.25rem);
+      letter-spacing: -0.025em;
+    }
+
+    .plain-summary {
+      padding: clamp(1.35rem, 4vw, 2.4rem);
+      border: 1px solid #b9d0c5;
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, #edf6f1, #fffdf8);
+      box-shadow: var(--shadow);
+    }
+
+    .plain-summary p {
+      max-width: 760px;
+      margin: 0;
+      font-size: clamp(1.15rem, 2.2vw, 1.52rem);
+      font-weight: 640;
+      line-height: 1.6;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.85rem;
+      margin-top: 1.2rem;
+    }
+
+    .stat {
+      min-height: 120px;
+      padding: 1rem;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--paper);
+    }
+
+    .stat strong {
+      display: block;
+      color: var(--accent);
+      font-size: 1.75rem;
+      line-height: 1.1;
+    }
+
+    .stat span {
+      display: block;
+      margin-top: 0.5rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.45;
+    }
+
+    .status-key {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      margin-top: 1rem;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      padding: 0.25rem 0.62rem;
+      border: 1px solid currentColor;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 750;
+      line-height: 1.35;
+      white-space: nowrap;
+    }
+
+    .status.done {
+      color: var(--done);
+      background: var(--done-bg);
+    }
+
+    .status.ready {
+      color: var(--ready);
+      background: var(--ready-bg);
+    }
+
+    .status.partial {
+      color: var(--partial);
+      background: var(--partial-bg);
+    }
+
+    .problem-grid,
+    .step-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .problem-card,
+    .step-card,
+    .note,
+    .file-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+    }
+
+    .problem-card,
+    .step-card {
+      padding: 1.25rem;
+    }
+
+    .problem-card h3,
+    .step-card h3 {
+      margin: 0.7rem 0 0.55rem;
+      font-size: 1.18rem;
+    }
+
+    .problem-card p,
+    .step-card p {
+      margin: 0.45rem 0 0;
+      color: #444b45;
+    }
+
+    .step-card {
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      box-shadow: 0 6px 18px rgba(38, 42, 37, 0.035);
+    }
+
+    .step-number {
+      display: grid;
+      width: 2rem;
+      height: 2rem;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--accent);
+      font-size: 0.9rem;
+      font-weight: 800;
+    }
+
+    .purpose {
+      margin-top: 0.9rem !important;
+      padding-top: 0.8rem;
+      border-top: 1px dashed var(--line);
+      color: var(--ink) !important;
+    }
+
+    .purpose strong {
+      color: var(--accent);
+    }
+
+    .sequence {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(110px, 1fr));
+      gap: 0.45rem;
+      margin: 1.2rem 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .sequence li {
+      position: relative;
+      padding: 0.9rem 0.75rem;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--paper);
+      font-size: 0.86rem;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .sequence li:not(:last-child)::after {
+      position: absolute;
+      top: 50%;
+      right: -0.43rem;
+      z-index: 2;
+      width: 0.42rem;
+      height: 0.42rem;
+      border-top: 2px solid var(--accent);
+      border-right: 2px solid var(--accent);
+      content: "";
+      transform: translateY(-50%) rotate(45deg);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 720px;
+    }
+
+    caption {
+      padding: 1rem 1rem 0.75rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+      text-align: left;
+    }
+
+    th,
+    td {
+      padding: 0.9rem 1rem;
+      border-top: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: #384039;
+      background: #f2f0e9;
+      font-size: 0.86rem;
+    }
+
+    td {
+      font-size: 0.92rem;
+    }
+
+    .note {
+      margin-top: 1rem;
+      padding: 1rem 1.15rem;
+      border-left: 5px solid var(--accent);
+    }
+
+    .note.warning {
+      border-left-color: var(--partial);
+      background: #fff9f7;
+    }
+
+    .note p {
+      margin: 0;
+    }
+
+    .done-list,
+    .todo-list {
+      display: grid;
+      gap: 0.7rem;
+      padding: 0;
+      list-style: none;
+    }
+
+    .done-list li,
+    .todo-list li {
+      position: relative;
+      padding: 0.85rem 1rem 0.85rem 2.9rem;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--paper);
+    }
+
+    .done-list li::before,
+    .todo-list li::before {
+      position: absolute;
+      top: 0.82rem;
+      left: 0.95rem;
+      display: grid;
+      width: 1.25rem;
+      height: 1.25rem;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 800;
+    }
+
+    .done-list li::before {
+      background: var(--done);
+      content: "✓";
+    }
+
+    .todo-list li::before {
+      background: var(--ready);
+      content: "→";
+    }
+
+    .file-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.75rem;
+    }
+
+    .file-card {
+      padding: 1rem;
+    }
+
+    .file-card h3 {
+      margin: 0 0 0.4rem;
+      font-size: 1rem;
+    }
+
+    .file-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    details {
+      margin-top: 0.8rem;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--paper);
+    }
+
+    summary {
+      padding: 0.9rem 1rem;
+      cursor: pointer;
+      font-weight: 750;
+    }
+
+    details > div {
+      padding: 0 1rem 1rem;
+      color: #454c46;
+    }
+
+    details p {
+      margin: 0.45rem 0;
+    }
+
+    .page-footer {
+      padding: 2rem 1.5rem 3.5rem;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .page-footer p {
+      max-width: 850px;
+      margin: 0.35rem 0;
+    }
+
+    @media (max-width: 920px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .toc {
+        position: static;
+      }
+
+      .toc ol {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .sequence {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .sequence li:not(:last-child)::after {
+        display: none;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .page-header {
+        padding-top: 3rem;
+      }
+
+      .layout {
+        padding-inline: 1rem;
+      }
+
+      .problem-grid,
+      .step-grid,
+      .file-grid,
+      .stats,
+      .toc ol,
+      .sequence {
+        grid-template-columns: 1fr;
+      }
+
+      .stat {
+        min-height: auto;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      *,
+      *::before,
+      *::after {
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    @media print {
+      body {
+        background: #fff;
+      }
+
+      .page-header,
+      .toc,
+      .plain-summary,
+      .problem-card,
+      .step-card,
+      .file-card,
+      .stat {
+        box-shadow: none;
+      }
+
+      .layout {
+        display: block;
+        width: 100%;
+      }
+
+      .toc {
+        position: static;
+        margin-bottom: 1.5rem;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">跳到正文</a>
+
+  <header class="page-header">
+    <div class="header-inner">
+      <p class="eyebrow">Skill Evolution · MVP 说明</p>
+      <h1>这一阶段实现了什么</h1>
+      <p class="lead">
+        这份页面说明当前程序已经能做什么、每一部分解决什么问题，以及哪些步骤
+        还只是写好了代码、尚未在真实模型上运行。
+      </p>
+      <ul class="meta" aria-label="文档信息">
+        <li>更新日期：2026-07-27</li>
+        <li>面向：项目负责人和开发者</li>
+        <li>形式：单文件 HTML，无外部依赖</li>
+      </ul>
+    </div>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-labelledby="toc-title">
+      <h2 id="toc-title">页面目录</h2>
+      <ol>
+        <li><a href="#summary">一句话说明</a></li>
+        <li><a href="#problem">要解决的问题</a></li>
+        <li><a href="#flow">完整过程</a></li>
+        <li><a href="#parts">各部分与目的</a></li>
+        <li><a href="#verified">已经实际验证</a></li>
+        <li><a href="#pending">尚未真实运行</a></li>
+        <li><a href="#storage">文件放在哪里</a></li>
+        <li><a href="#terms">名词白话解释</a></li>
+      </ol>
+    </nav>
+
+    <main id="main-content">
+      <section id="summary" aria-labelledby="summary-title">
+        <h2 id="summary-title">一句话说明</h2>
+        <div class="plain-summary">
+          <p>
+            当前程序可以让同一个 skill 重复执行，保存每次执行的完整过程，比较不同
+            结果之间的差异，并在安全 Harness 通过后让四个独立 agent 查找跨 trajectory
+            模式。汇总、修改副本和发布仍属于未来另行批准的阶段。
+          </p>
+        </div>
+
+        <div class="stats" aria-label="当前进度数字">
+          <article class="stat">
+            <strong>11 条</strong>
+            <span>已有完整单 trajectory 检查与语义报告</span>
+          </article>
+          <article class="stat">
+            <strong>183 项</strong>
+            <span>研究相关自动测试已经通过</span>
+          </article>
+          <article class="stat">
+            <strong>4 个</strong>
+            <span>不聚合 Specialist 角色已经定义</span>
+          </article>
+          <article class="stat">
+            <strong>0 份</strong>
+            <span>正式产品多 trajectory 分析</span>
+          </article>
+        </div>
+
+        <div class="status-key" aria-label="状态说明">
+          <span class="status done">已经写好并测试</span>
+          <span class="status ready">代码就绪，待真实运行</span>
+          <span class="status partial">只有部分结果</span>
+        </div>
+      </section>
+
+      <section id="problem" aria-labelledby="problem-title">
+        <h2 id="problem-title">这个 MVP 要解决什么问题</h2>
+        <div class="problem-grid">
+          <article class="problem-card">
+            <span class="status done">问题一</span>
+            <h3>只看最终文件，不知道中间发生了什么</h3>
+            <p>
+              一个 HTML 可能最后生成成功，但模型之前可能写入失败、重复读取、返工，
+              或使用了很昂贵的方法。只保存最终文件会漏掉这些信息。
+            </p>
+          </article>
+          <article class="problem-card">
+            <span class="status done">问题二</span>
+            <h3>同一个 skill 每次结果可能差很多</h3>
+            <p>
+              单次成功不能证明执行方法稳定。需要重复运行，才能看到结构、内容、
+              样式、时间和 token 使用是否一致。
+            </p>
+          </article>
+          <article class="problem-card">
+            <span class="status done">问题三</span>
+            <h3>发现差异后，容易直接猜原因</h3>
+            <p>
+              程序先提取可核对的事实，再让 agent 回到具体执行步骤和文件位置分析，
+              避免把猜测写成结论。
+            </p>
+          </article>
+          <article class="problem-card">
+            <span class="status done">问题四</span>
+            <h3>修改 skill 后，容易覆盖原版本</h3>
+            <p>
+              所有修改先发生在完整副本中。原 skill 不动，修改内容和测试结果全部
+              保留，最后由人决定是否发布。
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section id="flow" aria-labelledby="flow-title">
+        <h2 id="flow-title">从执行到发布的完整过程</h2>
+        <p>
+          这些步骤彼此分开。收集执行记录时不做分析；分析证据时不直接修改 skill；
+          测试修改副本时也不会自动发布。
+        </p>
+        <ol class="sequence" aria-label="处理顺序">
+          <li>定义一次任务</li>
+          <li>重复执行</li>
+          <li>保存全过程</li>
+          <li>统计并比较</li>
+          <li>分工查问题</li>
+          <li>测试修改副本</li>
+          <li>人工决定发布</li>
+        </ol>
+        <aside class="note">
+          <p>
+            <strong>为什么要分开：</strong>
+            即使分析 agent 失败、修改方案无效或自动测试没有结论，之前的执行记录
+            仍然完整存在，不会被后续步骤改写。
+          </p>
+        </aside>
+      </section>
+
+      <section id="parts" aria-labelledby="parts-title">
+        <h2 id="parts-title">各部分做了什么，目的是什么</h2>
+        <div class="step-grid">
+          <article class="step-card">
+            <div class="step-number" aria-hidden="true">1</div>
+            <div>
+              <span class="status done">已经写好并测试</span>
+              <h3>任务说明</h3>
+              <p>
+                每次测试都要说明输入是文件还是粘贴文字、原文件名是什么、预期生成
+                哪些文件，以及本次测试关注什么能力。
+              </p>
+            </div>
+            <p class="purpose">
+              <strong>目的：</strong>
+              让不同运行使用同一份明确要求，并保留 PDF、DOCX、TXT 等真实格式，
+              不把所有输入都假装成 Markdown。
+            </p>
+          </article>
+
+          <article class="step-card">
+            <div class="step-number" aria-hidden="true">2</div>
+            <div>
+              <span class="status done">已有真实运行记录</span>
+              <h3>重复执行</h3>
+              <p>
+                给定一个 skill 和次数 N，程序会执行 N 次。每次运行都有自己的文件夹，
+                一次失败不会覆盖其他运行，也不会让失败记录消失。
+              </p>
+            </div>
+            <p class="purpose">
+              <strong>目的：</strong>
+              观察同一个 skill 是否稳定，而不是用一次偶然成功代表整体表现。
+            </p>
+          </article>
+
+          <article class="step-card">
+            <div class="step-number" aria-hidden="true">3</div>
+            <div>
+              <span class="status done">已经写好并测试</span>
+              <h3>执行过程记录</h3>
+              <p>
+                程序按发生顺序保存完整消息、工具调用、工具结果、失败、重试、运行配置、
+                最终结果和产物。Pi 正常结束时还保存它自己的 session。
+              </p>
+            </div>
+            <p class="purpose">
+              <strong>目的：</strong>
+              能够回答“模型具体做了什么”“从哪一步开始返工”“失败后如何恢复”，
+              而不只看到最终文件。
+            </p>
+          </article>
+
+          <article class="step-card">
+            <div class="step-number" aria-hidden="true">4</div>
+            <div>
+              <span class="status done">已有真实报告</span>
+              <h3>执行过程统计</h3>
+              <p>
+                程序统计调用次数、输入和输出 token、费用、耗时、工具动作、失败、
+                重试、重复读取、临时脚本、分段写入、合并和返工。
+              </p>
+            </div>
+            <p class="purpose">
+              <strong>目的：</strong>
+              找到成本差异和低效步骤。统计使用每次调用的真实增量，不重复累计模型
+              返回的总 token。
+            </p>
+          </article>
+
+          <article class="step-card">
+            <div class="step-number" aria-hidden="true">5</div>
+            <div>
+              <span class="status partial">静态比较完成，截图缺失</span>
+              <h3>HTML 结果比较</h3>
+              <p>
+                程序比较标题、章节、链接、表格、无障碍标记、CSS 变量、颜色、字体、
+                脚本规模和可见文字，并列出每两个 HTML 之间的差异。
+              </p>
+            </div>
+            <p class="purpose">
+              <strong>目的：</strong>
+              把“这五个页面看起来差很多”变成可核对的结构和内容事实。它不自动给
+              页面打总分，也不擅自选出“最好”的一个。
+            </p>
+          </article>
+
+          <article class="step-card">
+            <div class="step-number" aria-hidden="true">6</div>
+            <div>
+              <span class="status done">已经写好并测试</span>
+              <h3>冻结完整研究语料</h3>
+              <p>
+                程序按目标检查样本，再冻结完整脱敏 trajectory、可读产物、单 trajectory 报告、
+                导航索引和统一基线。索引只帮助定位，不替 agent 预先总结结论。
+              </p>
+            </div>
+            <p class="purpose">
+              <strong>目的：</strong>
+              保留摘要会遗漏的临时脚本和隐式行为，并让每条结论都能回到原 trajectory。
+            </p>
+          </article>
+
+          <article class="step-card">
+            <div class="step-number" aria-hidden="true">7</div>
+            <div>
+              <span class="status ready">内部流程就绪，待验收与审批</span>
+              <h3>先验证研究能力，再分工分析</h3>
+              <p>
+                无模型 Harness 先证明搜索、下钻、代码执行和正式提交都可用；随后两个
+                全新 session 独立盲测。两次都通过后，四个 agent 分别研究行为模式、
+                条件与覆盖、一致性和资源效率，结果暂不汇总。
+              </p>
+            </div>
+            <p class="purpose">
+              <strong>目的：</strong>
+              先区分环境问题和 agent 能力问题，再让每个视角独立留下证据与失败记录。
+            </p>
+          </article>
+
+          <article class="step-card">
+            <div class="step-number" aria-hidden="true">8</div>
+            <div>
+              <span class="status partial">未来阶段，尚未授权</span>
+              <h3>证据不足时规划补采</h3>
+              <p>
+                当前系统只返回明确的缺失样本和补采要求，不会自动启动补测、Synthesis
+                或新的模型任务。未来如需补证流程，必须重新设计并由负责人批准。
+              </p>
+            </div>
+            <p class="purpose">
+              <strong>目的：</strong>
+              不把样本不足伪装成结论，也不在未授权时扩大真实模型调用范围。
+            </p>
+          </article>
+
+          <article class="step-card">
+            <div class="step-number" aria-hidden="true">9</div>
+            <div>
+              <span class="status partial">既有组件，当前研究不自动调用</span>
+              <h3>制作修改副本</h3>
+              <p>
+                每个明确的问题只生成一个修改方案。程序复制完整 skill，在副本中修改，
+                再自行计算文件增删改和文字差异。
+              </p>
+            </div>
+            <p class="purpose">
+              <strong>目的：</strong>
+              保护原 skill，并能准确回答改了什么。Agent 自己声称的差异不被当成事实，
+              以程序计算的结果为准。
+            </p>
+          </article>
+
+          <article class="step-card">
+            <div class="step-number" aria-hidden="true">10</div>
+            <div>
+              <span class="status partial">既有组件，当前研究不自动调用</span>
+              <h3>原版本与修改版本重新测试</h3>
+              <p>
+                修改版本先运行一次小测试；可以运行后，再让原版本和修改版本交替执行
+                同样的任务。默认一个方案最多安排 13 次运行。
+              </p>
+            </div>
+            <p class="purpose">
+              <strong>目的：</strong>
+              用新的、成对的测试判断修改是否有效，避免拿不同时间、不同任务的旧记录
+              硬做比较。
+            </p>
+          </article>
+
+          <article class="step-card">
+            <div class="step-number" aria-hidden="true">11</div>
+            <div>
+              <span class="status partial">未来阶段，尚未授权</span>
+              <h3>独立判断测试效果</h3>
+              <p>
+                一个没有参与修改的 agent 查看原版本和修改版本的结果，分别说明哪些
+                方面变好、变差、好坏并存、证据不足或根本无法运行。
+              </p>
+            </div>
+            <p class="purpose">
+              <strong>目的：</strong>
+              不把多个指标压成一个分数。正确性和能力覆盖不能用少花 token 来抵消。
+            </p>
+          </article>
+
+          <article class="step-card">
+            <div class="step-number" aria-hidden="true">12</div>
+            <div>
+              <span class="status partial">未来正式报告阶段</span>
+              <h3>人工发布决定</h3>
+              <p>
+                最终材料必须说明原 skill 是什么、执行记录是什么样、发现了什么问题、
+                修改长什么样，以及为什么认为修改可行或不可行。
+              </p>
+            </div>
+            <p class="purpose">
+              <strong>目的：</strong>
+              自动检查不能隐藏失败方案，也不能直接发布。所有方案和测试结果都交给人
+              审阅。
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section id="verified" aria-labelledby="verified-title">
+        <h2 id="verified-title">已经实际验证了什么</h2>
+        <ul class="done-list">
+          <li>
+            文档可视化 skill 已真实运行五次，每次都有独立执行记录、session 和 HTML
+            产物。
+          </li>
+          <li>
+            五次运行的第一次完整文件写入都失败了；后续分别使用分段写入、临时
+            Python 生成器、重新生成、分片和合并等方法恢复。
+          </li>
+          <li>
+            执行统计程序成功读取五次记录，并整理了资源使用和操作方法差异。
+          </li>
+          <li>
+            HTML 比较程序完成了 5 个产物的静态检查和 10 组两两比较。
+          </li>
+          <li>
+            五条同版本成功 trajectory 已冻结为内部 smoke 语料；批次仍为 prepared，没有
+            Harness 通过记录、AgentRun、能力认证、Specialist 结果板或正式多 trajectory 分析。
+          </li>
+          <li>
+            当前研究相关自动测试 183 项全部通过；本轮全仓 395 项中有 388 项在严格
+            默认沙箱通过，另 7 项仅因本地 HTTP 测试不能绑定 loopback 而在启动时被阻断。
+          </li>
+        </ul>
+        <aside class="note warning">
+          <p>
+            <strong>截图仍然缺失：</strong>
+            当前受限环境启动系统 Chrome 时会在页面渲染前崩溃。静态 HTML 比较没有
+            受影响，但桌面和移动端截图没有生成。项目已经记录规则：同一方法连续
+            崩溃两次后，禁止第三次原样尝试。
+          </p>
+        </aside>
+      </section>
+
+      <section id="pending" aria-labelledby="pending-title">
+        <h2 id="pending-title">哪些内容还没有真实运行</h2>
+        <ul class="todo-list">
+          <li>
+            新版 skill 执行提示词还在等待负责人审核，所以尚未运行
+            Markdown、TXT、DOCX、PDF 和粘贴文字五种输入测试。
+          </li>
+          <li>
+            四个研究 agent 的协议和 Harness manifest 仍在等待审核，没有向 DeepSeek
+            发出真实研究请求。
+          </li>
+          <li>
+            Skill Contract 已批准，但完整研究使用的 EvaluationSuite 仍为 proposed，
+            历史 trajectory 也缺 TaskCase 和条件映射，因此不能形成覆盖结论。
+          </li>
+          <li>
+            还没有真实生成任何 skill 修改副本，也没有真实运行原版本与修改版本的
+            成对测试。
+          </li>
+          <li>
+            Docker daemon 可访问，但固定研究镜像没有预装；真实 Harness 会停下来，
+            不自动下载镜像，也不会退回到没有隔离的本机执行。
+          </li>
+          <li>
+            最终效果判断和人工发布审阅的数据结构已经写好，但还没有真实案例进入
+            这两个步骤。
+          </li>
+        </ul>
+      </section>
+
+      <section id="storage" aria-labelledby="storage-title">
+        <h2 id="storage-title">记录和结果放在哪里</h2>
+        <p>
+          MVP 只使用普通文件，不使用数据库。每一种记录都有自己的目录和状态文件；
+          程序重启后可以扫描未完成的状态继续处理。
+        </p>
+        <div class="file-grid">
+          <article class="file-card">
+            <h3><code>.skill-evolution/skills/</code></h3>
+            <p>Skill 版本、执行、输入输出、trajectory、单 trajectory 分析和正式产品结果位置。</p>
+          </article>
+          <article class="file-card">
+            <h3><code>.skill-evolution/internal-research/corpora/</code></h3>
+            <p>冻结的脱敏 raw Trajectory、导航索引、确定性基线和语料清单。</p>
+          </article>
+          <article class="file-card">
+            <h3><code>.skill-evolution/internal-research/batches/</code></h3>
+            <p>Harness、双盲测、能力认证和四 Specialist 的内部追加记录。</p>
+          </article>
+          <article class="file-card">
+            <h3><code>.skill-evolution/experiment-requests/</code></h3>
+            <p>pre-0027 兼容数据；当前多 Trajectory research 不会自动写入补证申请。</p>
+          </article>
+          <article class="file-card">
+            <h3><code>.skill-evolution/candidates/</code></h3>
+            <p>Skill 修改副本、完整内容和程序计算的差异。</p>
+          </article>
+          <article class="file-card">
+            <h3><code>.skill-evolution/comparisons/</code></h3>
+            <p>原版本与修改版本的成对运行计划和结果。</p>
+          </article>
+          <article class="file-card">
+            <h3><code>.skill-evolution/reviews/</code></h3>
+            <p>交给人审阅的完整说明和最终发布决定。</p>
+          </article>
+          <article class="file-card">
+            <h3><code>.memory/</code></h3>
+            <p>开发过程中接受的决定、遇到的问题和当前状态。</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="terms" aria-labelledby="terms-title">
+        <h2 id="terms-title">项目名词的白话解释</h2>
+        <div class="table-wrap">
+          <table>
+            <caption>页面中保留了少量代码里的英文名称，含义如下。</caption>
+            <thead>
+              <tr>
+                <th scope="col">项目中的名称</th>
+                <th scope="col">白话解释</th>
+                <th scope="col">为什么保留这个名称</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Skill</td>
+                <td>告诉 agent 如何完成某类工作的说明文件和配套资源。</td>
+                <td>这是被测试、被修改和被发布的对象。</td>
+              </tr>
+              <tr>
+                <td>Trajectory</td>
+                <td>一次执行按时间排列的完整记录。</td>
+                <td>代码、文件和数据格式中都使用这个名称。</td>
+              </tr>
+              <tr>
+                <td>Replay</td>
+                <td>用相同任务再执行一次或多次。</td>
+                <td>用于观察稳定性，也用于重新测试修改方案。</td>
+              </tr>
+              <tr>
+                <td>Profiler</td>
+                <td>把多次执行中的时间、token、工具操作和失败整理成报告。</td>
+                <td>它只统计事实，不判断好坏。</td>
+              </tr>
+              <tr>
+                <td>Comparator</td>
+                <td>比较多个 HTML 的结构、内容和样式差异。</td>
+                <td>它列出差异，不给总分。</td>
+              </tr>
+              <tr>
+                <td>EvidenceBundle</td>
+                <td>固定下来、供分析使用的一整套只读材料。</td>
+                <td>确保不同 agent 看到同一份证据。</td>
+              </tr>
+              <tr>
+                <td>Candidate</td>
+                <td>对原 skill 做过修改的完整副本。</td>
+                <td>它还不是正式版本，必须先测试和人工批准。</td>
+              </tr>
+              <tr>
+                <td>Pi RPC</td>
+                <td>Python 启动一个独立 Pi 子进程，并通过一行一条 JSON 消息通信。</td>
+                <td>每个分析 agent 都有独立进程和记录。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <details>
+          <summary>这个 MVP 明确没有做什么</summary>
+          <div>
+            <p>
+              没有数据库、没有常驻分布式任务系统、没有让 agent 自己发布 skill、
+              没有用一个总分决定好坏，也没有在证据不足时无限自动运行模型。
+            </p>
+          </div>
+        </details>
+      </section>
+    </main>
+  </div>
+
+  <footer class="page-footer">
+    <p>
+      内容依据项目的 <a href="../README.md">README</a>、
+      <a href="architecture-proposal.md">架构说明</a>、
+      <a href="../.plan/next.md">后续计划</a> 和
+      <a href="../.memory/current.md">当前状态</a> 整理。
+    </p>
+    <p>
+      本页只陈述已经实现、已经验证和仍待执行的内容，不代表尚未审核的提示词或
+      skill 能力说明已经获批。
+    </p>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,51 @@
+{
+  "schema": "evaluation.suite.v1",
+  "suite_id": "document-html-visualizer-v2",
+  "skill_id": "document-html-visualizer",
+  "version": "1.0.0",
+  "status": "proposed",
+  "owner": "project-owner",
+  "approved_by": null,
+  "approved_at": null,
+  "task_cases": [
+    {
+      "task_case_id": "document-formats-markdown-v1",
+      "path": "task-cases/document-formats/markdown.json",
+      "conditions": {"delivery": "file", "format": "md"}
+    },
+    {
+      "task_case_id": "document-formats-text-v1",
+      "path": "task-cases/document-formats/text.json",
+      "conditions": {"delivery": "file", "format": "txt"}
+    },
+    {
+      "task_case_id": "document-formats-docx-v1",
+      "path": "task-cases/document-formats/docx.json",
+      "conditions": {"delivery": "file", "format": "docx"}
+    },
+    {
+      "task_case_id": "document-formats-pdf-v1",
+      "path": "task-cases/document-formats/pdf.json",
+      "conditions": {"delivery": "file", "format": "pdf"}
+    },
+    {
+      "task_case_id": "document-formats-inline-text-v1",
+      "path": "task-cases/document-formats/inline-text.json",
+      "conditions": {"delivery": "inline_text", "format": "inline_text"}
+    }
+  ],
+  "coverage_dimensions": [
+    {
+      "id": "format",
+      "required_values": ["md", "txt", "docx", "pdf", "inline_text"]
+    },
+    {
+      "id": "delivery",
+      "required_values": ["file", "inline_text"]
+    }
+  ],
+  "readiness": {
+    "minimum_distinct_condition_groups": 2,
+    "minimum_samples_per_condition_group": 2
+  }
+}

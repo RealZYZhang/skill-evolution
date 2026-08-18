@@ -1,0 +1,20 @@
+{
+  "schema": "task.case.v1",
+  "task_case_id": "document-formats-inline-text-v1",
+  "delivery": "inline_text",
+  "input": {
+    "text": "Skill Evolution Format Fixture\n\nVersion: 1.2\nEffective date: 2026-07-26\nReplay budget: 13 runs\nReference: https://example.org/skill-evolution/policy\n\nDECISION\nAutomatic candidate replay must stop when sandbox preflight fails. It must never fall back to the host.\n\nCONSTRAINTS\nCorrectness and capability coverage are hard constraints.\nEvery candidate and failed attempt remains visible.\nOnly a human may approve release of a candidate skill.\n\nMETRICS\nDimension | Baseline | Guardrail\nCorrectness | Required | No regression\nToken usage | Measured by component | Report variance\nDuration | Measured per run | Report outliers\n\nLIMITATION\nVisual preference is not inferred from deterministic metrics; screenshots require human review."
+  },
+  "expected_artifacts": [
+    "output.html"
+  ],
+  "capability_tags": [
+    "format:inline_text",
+    "delivery:inline_text",
+    "content:canonical-format-isolation"
+  ],
+  "budget": {
+    "timeout_seconds": 900,
+    "max_expected_runs": 1
+  }
+}

@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "analysis.multi_trajectory_research.v1",
+  "title": "Evidence-backed multi-Trajectory specialist research result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "role",
+    "corpus_digest",
+    "baseline_digest",
+    "research_scope",
+    "findings",
+    "limitations"
+  ],
+  "properties": {
+    "schema": { "const": "analysis.multi_trajectory_research.v1" },
+    "role": {
+      "enum": [
+        "behavior_pattern_analyst",
+        "conditions_coverage_analyst",
+        "outcome_consistency_analyst",
+        "resource_efficiency_analyst"
+      ]
+    },
+    "corpus_digest": { "$ref": "#/$defs/sha256" },
+    "baseline_digest": { "$ref": "#/$defs/sha256" },
+    "research_scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eligible_trajectory_ids",
+        "reviewed_trajectory_ids",
+        "counterexample_search"
+      ],
+      "properties": {
+        "eligible_trajectory_ids": { "$ref": "#/$defs/nonEmptyStringArray" },
+        "reviewed_trajectory_ids": { "$ref": "#/$defs/nonEmptyStringArray" },
+        "counterexample_search": { "$ref": "#/$defs/nonEmptyString" }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/finding" }
+    },
+    "limitations": { "$ref": "#/$defs/stringArray" }
+  },
+  "$defs": {
+    "nonEmptyString": { "type": "string", "minLength": 1 },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "stringArray": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/nonEmptyString" }
+    },
+    "nonEmptyStringArray": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/nonEmptyString" }
+    },
+    "evidenceRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema"],
+      "properties": {
+        "schema": { "const": "evidence.ref.v1" },
+        "campaign_id": { "type": "string" },
+        "run_id": { "type": "string" },
+        "seq": { "type": "integer", "minimum": 1 },
+        "report_path": { "type": "string" },
+        "json_pointer": { "type": "string" },
+        "artifact_path": { "type": "string" },
+        "line": { "type": "integer", "minimum": 1 },
+        "selector": { "type": "string" }
+      },
+      "anyOf": [
+        { "required": ["run_id", "seq"] },
+        { "required": ["report_path"] },
+        { "required": ["artifact_path"] }
+      ]
+    },
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "subject",
+        "pattern_type",
+        "claim",
+        "eligible_trajectory_ids",
+        "observed_trajectory_ids",
+        "checked_absent_trajectory_ids",
+        "logical_phase",
+        "shared_purpose",
+        "observable_effect",
+        "confidence",
+        "evidence",
+        "counterevidence",
+        "derivation_ids",
+        "limitations"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/nonEmptyString" },
+        "subject": { "$ref": "#/$defs/nonEmptyString" },
+        "pattern_type": {
+          "enum": [
+            "recurring_problem",
+            "recovery_success",
+            "implicit_behavior",
+            "condition_association",
+            "coverage_gap",
+            "insufficient_condition_evidence",
+            "inconsistency",
+            "consistent_behavior",
+            "resource_inefficiency",
+            "efficient_pattern"
+          ]
+        },
+        "claim": { "$ref": "#/$defs/nonEmptyString" },
+        "eligible_trajectory_ids": { "$ref": "#/$defs/nonEmptyStringArray" },
+        "observed_trajectory_ids": { "$ref": "#/$defs/stringArray" },
+        "checked_absent_trajectory_ids": { "$ref": "#/$defs/stringArray" },
+        "logical_phase": { "$ref": "#/$defs/nonEmptyString" },
+        "shared_purpose": { "$ref": "#/$defs/nonEmptyString" },
+        "observable_effect": { "$ref": "#/$defs/nonEmptyString" },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/evidenceRef" }
+        },
+        "counterevidence": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/evidenceRef" }
+        },
+        "derivation_ids": { "$ref": "#/$defs/stringArray" },
+        "limitations": { "$ref": "#/$defs/stringArray" }
+      }
+    }
+  }
+}

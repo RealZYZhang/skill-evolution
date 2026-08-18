@@ -1,0 +1,10 @@
+{
+  "schema": "prompt.approval.v1",
+  "status": "approved",
+  "prompt_id": "analysis.outcome-consistency-research",
+  "version": "1",
+  "prompt_file": "outcome-consistency-research-v1.md",
+  "content_sha256": "47c3462b60665f7efc299781a551fed35c54173eb22d2523ac2969dd548585d9",
+  "approved_by": "project-owner",
+  "approved_at": "2026-08-16T05:34:14+00:00"
+}

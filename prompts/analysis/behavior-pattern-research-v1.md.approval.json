@@ -1,0 +1,10 @@
+{
+  "schema": "prompt.approval.v1",
+  "status": "approved",
+  "prompt_id": "analysis.behavior-pattern-research",
+  "version": "1",
+  "prompt_file": "behavior-pattern-research-v1.md",
+  "content_sha256": "8d13007583f8e61a83212d619ec254650d55fbf105946a8cba6c7617d5cb6475",
+  "approved_by": "project-owner",
+  "approved_at": "2026-08-16T05:34:14+00:00"
+}

@@ -1,0 +1,10 @@
+{
+  "schema": "prompt.approval.v1",
+  "status": "proposed",
+  "prompt_id": "analysis.candidate-proposer",
+  "version": "1",
+  "prompt_file": "candidate-proposer-v1.md",
+  "content_sha256": null,
+  "approved_by": null,
+  "approved_at": null
+}

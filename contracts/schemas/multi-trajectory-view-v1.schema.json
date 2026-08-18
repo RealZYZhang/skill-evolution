@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:skill-evolution:schema:multi-trajectory-view:v1",
+  "title": "Owner-facing multi-trajectory analysis projection",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "analysis_id",
+    "skill_id",
+    "revision_id",
+    "generated_at",
+    "analysis",
+    "overview",
+    "execution_set",
+    "patterns",
+    "findings",
+    "evidence",
+    "recommendation",
+    "provenance"
+  ],
+  "properties": {
+    "schema": {"const": "analysis.multi_trajectory_view.v1"},
+    "analysis_id": {"type": "string", "minLength": 1},
+    "skill_id": {"type": "string", "minLength": 1},
+    "revision_id": {"type": "string", "minLength": 1},
+    "generated_at": {"type": "string", "minLength": 1},
+    "analysis": {"type": "object"},
+    "overview": {"type": "object"},
+    "execution_set": {"type": "object"},
+    "patterns": {"type": "array"},
+    "findings": {"type": "array"},
+    "evidence": {"type": "array"},
+    "recommendation": {"type": "object"},
+    "provenance": {"type": "object"}
+  }
+}

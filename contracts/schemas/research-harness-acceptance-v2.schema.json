@@ -1,0 +1,884 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "research.harness_acceptance.v2",
+  "title": "Executable and replayable multi-Trajectory Harness acceptance report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "content_sha256",
+    "validator_version",
+    "status",
+    "started_at",
+    "ended_at",
+    "corpus",
+    "implementation",
+    "execution_identity",
+    "execution_identity_sha256",
+    "sandbox",
+    "audit",
+    "checks"
+  ],
+  "properties": {
+    "schema": { "const": "research.harness_acceptance.v2" },
+    "content_sha256": { "$ref": "#/$defs/sha256" },
+    "validator_version": {
+      "const": "research-harness-validator-2026-08-14.v2"
+    },
+    "status": { "enum": ["passed", "failed"] },
+    "started_at": { "type": "string", "format": "date-time" },
+    "ended_at": { "type": "string", "format": "date-time" },
+    "corpus": { "$ref": "#/$defs/corpus" },
+    "implementation": { "$ref": "#/$defs/implementation" },
+    "execution_identity": {
+      "oneOf": [
+        { "$ref": "#/$defs/executionIdentity" },
+        { "type": "null" }
+      ]
+    },
+    "execution_identity_sha256": { "$ref": "#/$defs/nullableSha256" },
+    "sandbox": { "$ref": "#/$defs/sandbox" },
+    "audit": { "$ref": "#/$defs/audit" },
+    "checks": {
+      "type": "array",
+      "minItems": 7,
+      "maxItems": 7,
+      "prefixItems": [
+        { "$ref": "#/$defs/corpusPreflight" },
+        { "$ref": "#/$defs/navigationIndex" },
+        { "$ref": "#/$defs/evidenceRoundtrip" },
+        { "$ref": "#/$defs/fakeAgentResearchLoop" },
+        { "$ref": "#/$defs/sandboxIsolation" },
+        { "$ref": "#/$defs/resourceLimits" },
+        { "$ref": "#/$defs/structuredSubmission" }
+      ],
+      "items": false
+    }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "nullableSha256": {
+      "oneOf": [{ "$ref": "#/$defs/sha256" }, { "type": "null" }]
+    },
+    "nonEmptyString": { "type": "string", "minLength": 1 },
+    "nullableString": {
+      "oneOf": [{ "$ref": "#/$defs/nonEmptyString" }, { "type": "null" }]
+    },
+    "corpus": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "corpus_id",
+        "content_sha256",
+        "baseline_sha256",
+        "execution_ids"
+      ],
+      "properties": {
+        "corpus_id": {
+          "oneOf": [{ "$ref": "#/$defs/nonEmptyString" }, { "type": "null" }]
+        },
+        "content_sha256": { "$ref": "#/$defs/nullableSha256" },
+        "baseline_sha256": { "$ref": "#/$defs/nullableSha256" },
+        "execution_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/nonEmptyString" }
+        }
+      }
+    },
+    "implementation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "validator_sha256",
+        "runtime_sha256",
+        "research_tools_sha256",
+        "research_output_sha256",
+        "driver_sha256",
+        "driver_protocol_version"
+      ],
+      "properties": {
+        "validator_sha256": { "$ref": "#/$defs/sha256" },
+        "runtime_sha256": { "$ref": "#/$defs/sha256" },
+        "research_tools_sha256": { "$ref": "#/$defs/sha256" },
+        "research_output_sha256": { "$ref": "#/$defs/sha256" },
+        "driver_sha256": { "$ref": "#/$defs/sha256" },
+        "driver_protocol_version": {
+          "const": "deterministic-research-driver.v1"
+        }
+      }
+    },
+    "fileIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "$ref": "#/$defs/nonEmptyString" },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "implementationFingerprint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "files", "content_sha256"],
+      "properties": {
+        "schema": { "const": "research.implementation_fingerprint.v1" },
+        "files": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/fileIdentity" }
+        },
+        "content_sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "piExecutable": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "bytes", "sha256"],
+      "properties": {
+        "path": { "$ref": "#/$defs/nonEmptyString" },
+        "bytes": { "type": "integer", "minimum": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "piCommandFile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["argument_index", "path", "bytes", "sha256"],
+      "properties": {
+        "argument_index": { "type": "integer", "minimum": 0 },
+        "path": { "$ref": "#/$defs/nonEmptyString" },
+        "bytes": { "type": "integer", "minimum": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "piPackage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "root",
+        "package_json_sha256",
+        "files",
+        "bytes",
+        "tree_sha256"
+      ],
+      "properties": {
+        "root": { "$ref": "#/$defs/nonEmptyString" },
+        "package_json_sha256": { "$ref": "#/$defs/sha256" },
+        "files": { "type": "integer", "minimum": 1 },
+        "bytes": { "type": "integer", "minimum": 1 },
+        "tree_sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "piExecutionIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "resolved_command",
+        "executable",
+        "command_files",
+        "interpreters",
+        "packages",
+        "version",
+        "extra_args",
+        "rpc_policy"
+      ],
+      "properties": {
+        "schema": { "const": "research.pi_execution_identity.v2" },
+        "resolved_command": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "items": { "$ref": "#/$defs/nonEmptyString" }
+        },
+        "executable": { "$ref": "#/$defs/piExecutable" },
+        "command_files": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "items": { "$ref": "#/$defs/piCommandFile" }
+        },
+        "interpreters": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/piExecutable" }
+        },
+        "packages": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/piPackage" }
+        },
+        "version": { "$ref": "#/$defs/nonEmptyString" },
+        "extra_args": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "const": "--verbose" }
+        },
+        "rpc_policy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "no_session",
+            "project_approval",
+            "built_in_tools",
+            "tool_allowlist",
+            "discovered_extensions",
+            "built_in_extension_factories",
+            "explicit_extensions",
+            "prompt_templates",
+            "skills",
+            "context_files",
+            "themes",
+            "offline",
+            "system_prompt",
+            "append_system_prompt",
+            "environment",
+            "agent_directory",
+            "credential_source",
+            "model_catalog"
+          ],
+          "properties": {
+            "mode": { "const": "rpc" },
+            "no_session": { "const": true },
+            "project_approval": { "const": "denied" },
+            "built_in_tools": { "const": false },
+            "tool_allowlist": {
+              "type": "array",
+              "minItems": 12,
+              "maxItems": 12,
+              "prefixItems": [
+                { "const": "research_list" },
+                { "const": "research_read" },
+                { "const": "research_search" },
+                { "const": "research_query" },
+                { "const": "research_trajectory_window" },
+                { "const": "research_work_read" },
+                { "const": "research_work_write" },
+                { "const": "research_work_edit" },
+                { "const": "research_exec" },
+                { "const": "submit_multi_trajectory_research" },
+                { "const": "submit_error_identification" },
+                { "const": "submit_error_report" }
+              ],
+              "items": false
+            },
+            "discovered_extensions": { "const": false },
+            "built_in_extension_factories": {
+              "const": "package_bound"
+            },
+            "explicit_extensions": {
+              "const": {
+                "real_provider": {
+                  "names": ["research_tools", "research_output"],
+                  "binding": "execution_toolchain_hashes"
+                },
+                "harness_faux": {
+                  "names": [
+                    "research_tools",
+                    "research_output",
+                    "research_harness_driver"
+                  ],
+                  "binding": "execution_toolchain_and_acceptance_implementation_hashes"
+                }
+              }
+            },
+            "prompt_templates": { "const": false },
+            "skills": { "const": false },
+            "context_files": { "const": false },
+            "themes": { "const": false },
+            "offline": { "const": true },
+            "system_prompt": { "const": "bound_pi_builtin" },
+            "append_system_prompt": { "const": "none_isolated" },
+            "environment": { "const": "replace_allowlist" },
+            "agent_directory": { "const": "isolated_ephemeral" },
+            "credential_source": {
+              "const": {
+                "real_provider": "selected_literal_api_key_checked_each_spawn",
+                "harness_faux": "none"
+              }
+            },
+            "model_catalog": {
+              "const": {
+                "real_provider": "package_bound_builtin_only",
+                "harness_faux": "attested_driver_extension_only"
+              }
+            }
+          }
+        }
+      }
+    },
+    "dockerControlPlane": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "resolved_command",
+        "executable",
+        "interpreters",
+        "client",
+        "daemon"
+      ],
+      "properties": {
+        "schema": { "const": "research.docker_control_plane.v1" },
+        "resolved_command": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "items": { "$ref": "#/$defs/nonEmptyString" }
+        },
+        "executable": { "$ref": "#/$defs/piExecutable" },
+        "interpreters": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/piExecutable" }
+        },
+        "client": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "version",
+            "api_version",
+            "git_commit",
+            "go_version",
+            "os",
+            "arch",
+            "build_time",
+            "context",
+            "endpoint"
+          ],
+          "properties": {
+            "version": { "$ref": "#/$defs/nonEmptyString" },
+            "api_version": { "$ref": "#/$defs/nonEmptyString" },
+            "git_commit": { "$ref": "#/$defs/nullableString" },
+            "go_version": { "$ref": "#/$defs/nullableString" },
+            "os": { "$ref": "#/$defs/nonEmptyString" },
+            "arch": { "$ref": "#/$defs/nonEmptyString" },
+            "build_time": { "$ref": "#/$defs/nullableString" },
+            "context": { "$ref": "#/$defs/nonEmptyString" },
+            "endpoint": { "$ref": "#/$defs/nonEmptyString" }
+          }
+        },
+        "daemon": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "version",
+            "api_version",
+            "min_api_version",
+            "git_commit",
+            "go_version",
+            "os",
+            "arch",
+            "build_time",
+            "kernel_version",
+            "operating_system",
+            "os_version",
+            "os_type",
+            "architecture",
+            "security_options",
+            "rootless",
+            "cgroup_driver",
+            "cgroup_version",
+            "storage_driver",
+            "default_runtime",
+            "isolation"
+          ],
+          "properties": {
+            "id": { "$ref": "#/$defs/nonEmptyString" },
+            "version": { "$ref": "#/$defs/nonEmptyString" },
+            "api_version": { "$ref": "#/$defs/nonEmptyString" },
+            "min_api_version": { "$ref": "#/$defs/nullableString" },
+            "git_commit": { "$ref": "#/$defs/nullableString" },
+            "go_version": { "$ref": "#/$defs/nullableString" },
+            "os": { "$ref": "#/$defs/nonEmptyString" },
+            "arch": { "$ref": "#/$defs/nonEmptyString" },
+            "build_time": { "$ref": "#/$defs/nullableString" },
+            "kernel_version": { "$ref": "#/$defs/nonEmptyString" },
+            "operating_system": { "$ref": "#/$defs/nonEmptyString" },
+            "os_version": { "$ref": "#/$defs/nullableString" },
+            "os_type": { "$ref": "#/$defs/nonEmptyString" },
+            "architecture": { "$ref": "#/$defs/nonEmptyString" },
+            "security_options": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": { "$ref": "#/$defs/nonEmptyString" }
+            },
+            "rootless": { "type": "boolean" },
+            "cgroup_driver": { "$ref": "#/$defs/nullableString" },
+            "cgroup_version": { "$ref": "#/$defs/nullableString" },
+            "storage_driver": { "$ref": "#/$defs/nullableString" },
+            "default_runtime": { "$ref": "#/$defs/nullableString" },
+            "isolation": { "$ref": "#/$defs/nullableString" }
+          }
+        }
+      }
+    },
+    "executionIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "implementation", "toolchain", "pi", "sandbox"],
+      "properties": {
+        "schema": { "const": "research.execution_identity.v2" },
+        "implementation": { "$ref": "#/$defs/implementationFingerprint" },
+        "toolchain": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "harness_context_sha256",
+            "research_tools_sha256",
+            "research_output_sha256"
+          ],
+          "properties": {
+            "harness_context_sha256": { "$ref": "#/$defs/sha256" },
+            "research_tools_sha256": { "$ref": "#/$defs/sha256" },
+            "research_output_sha256": { "$ref": "#/$defs/sha256" }
+          }
+        },
+        "pi": { "$ref": "#/$defs/piExecutionIdentity" },
+        "sandbox": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "backend",
+            "image",
+            "image_id",
+            "limits",
+            "control_plane"
+          ],
+          "properties": {
+            "backend": { "const": "docker_research_lab" },
+            "image": { "$ref": "#/$defs/nonEmptyString" },
+            "image_id": {
+              "type": "string",
+              "pattern": "^sha256:[0-9a-f]{64}$"
+            },
+            "limits": { "$ref": "#/$defs/limits" },
+            "control_plane": { "$ref": "#/$defs/dockerControlPlane" }
+          }
+        }
+      }
+    },
+    "limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cpus",
+        "memory",
+        "pids",
+        "open_files",
+        "work_bytes",
+        "temporary_bytes",
+        "command_timeout_seconds",
+        "max_output_bytes",
+        "max_tool_calls",
+        "max_concurrent_tool_calls",
+        "max_total_output_bytes",
+        "max_total_command_milliseconds"
+      ],
+      "properties": {
+        "cpus": { "type": "number", "exclusiveMinimum": 0 },
+        "memory": { "$ref": "#/$defs/nonEmptyString" },
+        "pids": { "type": "integer", "minimum": 1 },
+        "open_files": { "type": "integer", "minimum": 1 },
+        "work_bytes": { "type": "integer", "minimum": 1 },
+        "temporary_bytes": { "type": "integer", "minimum": 1 },
+        "command_timeout_seconds": { "type": "integer", "minimum": 1 },
+        "max_output_bytes": { "type": "integer", "minimum": 1 },
+        "max_tool_calls": { "type": "integer", "minimum": 1 },
+        "max_concurrent_tool_calls": { "const": 1 },
+        "max_total_output_bytes": { "type": "integer", "minimum": 1 },
+        "max_total_command_milliseconds": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "toolBudgets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "command_timeout_milliseconds",
+        "max_output_bytes",
+        "max_tool_calls",
+        "max_concurrent_tool_calls",
+        "max_total_output_bytes",
+        "max_total_command_milliseconds"
+      ],
+      "properties": {
+        "command_timeout_milliseconds": { "type": "integer", "minimum": 1 },
+        "max_output_bytes": { "type": "integer", "minimum": 1 },
+        "max_tool_calls": { "type": "integer", "minimum": 1 },
+        "max_concurrent_tool_calls": { "const": 1 },
+        "max_total_output_bytes": { "type": "integer", "minimum": 1 },
+        "max_total_command_milliseconds": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "activeConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "image_id",
+        "network_mode",
+        "network_count",
+        "log_driver",
+        "readonly_rootfs",
+        "user",
+        "pids_limit",
+        "nano_cpus",
+        "memory_bytes",
+        "nofile_soft",
+        "nofile_hard",
+        "cap_drop",
+        "security_options",
+        "tmpfs",
+        "tool_budgets"
+      ],
+      "properties": {
+        "image_id": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "network_mode": { "const": "none" },
+        "network_count": { "const": 0 },
+        "log_driver": { "const": "none" },
+        "readonly_rootfs": { "const": true },
+        "user": { "const": "65534:65534" },
+        "pids_limit": { "type": "integer", "minimum": 1 },
+        "nano_cpus": { "type": "integer", "minimum": 1 },
+        "memory_bytes": { "type": "integer", "minimum": 1 },
+        "nofile_soft": { "type": "integer", "minimum": 1 },
+        "nofile_hard": { "type": "integer", "minimum": 1 },
+        "cap_drop": {
+          "type": "array",
+          "contains": { "const": "ALL" }
+        },
+        "security_options": {
+          "type": "array",
+          "items": { "type": "string" },
+          "contains": {
+            "type": "string",
+            "pattern": "^no-new-privileges(?::true)?$"
+          },
+          "minContains": 1
+        },
+        "tmpfs": {
+          "type": "object",
+          "required": ["/tmp", "/work"],
+          "properties": {
+            "/tmp": { "$ref": "#/$defs/nonEmptyString" },
+            "/work": { "$ref": "#/$defs/nonEmptyString" }
+          }
+        },
+        "tool_budgets": { "$ref": "#/$defs/toolBudgets" }
+      }
+    },
+    "sandbox": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "backend",
+        "image",
+        "image_id",
+        "preflight_available",
+        "limits",
+        "limits_sha256",
+        "active_config",
+        "active_config_sha256"
+      ],
+      "properties": {
+        "backend": { "const": "docker_research_lab" },
+        "image": { "$ref": "#/$defs/nonEmptyString" },
+        "image_id": {
+          "oneOf": [
+            { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+            { "type": "null" }
+          ]
+        },
+        "preflight_available": { "type": "boolean" },
+        "limits": { "$ref": "#/$defs/limits" },
+        "limits_sha256": { "$ref": "#/$defs/sha256" },
+        "active_config": {
+          "oneOf": [
+            { "$ref": "#/$defs/activeConfig" },
+            { "type": "null" }
+          ]
+        },
+        "active_config_sha256": { "$ref": "#/$defs/nullableSha256" }
+      }
+    },
+    "audit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["directory", "manifest_sha256", "tree_sha256"],
+      "properties": {
+        "directory": { "$ref": "#/$defs/nonEmptyString" },
+        "manifest_sha256": { "$ref": "#/$defs/sha256" },
+        "tree_sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "assertion", "observed", "sha256"],
+      "properties": {
+        "kind": { "const": "observed_fact" },
+        "assertion": { "$ref": "#/$defs/nonEmptyString" },
+        "observed": { "$ref": "#/$defs/nonEmptyString" },
+        "sha256": { "$ref": "#/$defs/nullableSha256" }
+      }
+    },
+    "subcheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "status", "evidence_sha256", "error"],
+      "properties": {
+        "name": { "$ref": "#/$defs/nonEmptyString" },
+        "status": { "enum": ["passed", "failed", "not_run"] },
+        "evidence_sha256": { "$ref": "#/$defs/nullableSha256" },
+        "error": {
+          "oneOf": [{ "$ref": "#/$defs/nonEmptyString" }, { "type": "null" }]
+        }
+      }
+    },
+    "check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "status", "subchecks", "evidence", "error"],
+      "properties": {
+        "name": { "type": "string" },
+        "status": { "enum": ["passed", "failed"] },
+        "subchecks": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/subcheck" }
+        },
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/evidence" }
+        },
+        "error": {
+          "oneOf": [{ "$ref": "#/$defs/nonEmptyString" }, { "type": "null" }]
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "passed" } } },
+          "then": {
+            "properties": {
+              "error": { "type": "null" },
+              "subchecks": {
+                "items": {
+                  "properties": {
+                    "status": { "const": "passed" },
+                    "evidence_sha256": { "$ref": "#/$defs/sha256" },
+                    "error": { "type": "null" }
+                  }
+                }
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "error": { "$ref": "#/$defs/nonEmptyString" },
+              "subchecks": {
+                "contains": {
+                  "properties": { "status": { "const": "failed" } }
+                },
+                "minContains": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "corpusPreflight": {
+      "allOf": [{ "$ref": "#/$defs/check" }],
+      "properties": {
+        "name": { "const": "corpus_preflight" },
+        "subchecks": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "prefixItems": [
+            { "properties": { "name": { "const": "pristine_corpus_accepted" } } },
+            { "properties": { "name": { "const": "corrupt_declared_file_rejected" } } },
+            { "properties": { "name": { "const": "missing_declared_file_rejected" } } },
+            { "properties": { "name": { "const": "unsupported_schema_rejected" } } }
+          ],
+          "items": false
+        },
+        "evidence": { "minItems": 4, "maxItems": 4 }
+      }
+    },
+    "navigationIndex": {
+      "allOf": [{ "$ref": "#/$defs/check" }],
+      "properties": {
+        "name": { "const": "navigation_index" },
+        "subchecks": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "prefixItems": [
+            { "properties": { "name": { "const": "all_trajectories_navigable" } } },
+            { "properties": { "name": { "const": "action_entries_unique" } } },
+            { "properties": { "name": { "const": "script_records_navigable" } } }
+          ],
+          "items": false
+        },
+        "evidence": { "minItems": 3, "maxItems": 3 }
+      }
+    },
+    "evidenceRoundtrip": {
+      "allOf": [{ "$ref": "#/$defs/check" }],
+      "properties": {
+        "name": { "const": "evidence_roundtrip" },
+        "subchecks": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "prefixItems": [
+            { "properties": { "name": { "const": "all_index_locators_resolve" } } },
+            { "properties": { "name": { "const": "all_trajectory_records_indexed" } } }
+          ],
+          "items": false
+        },
+        "evidence": { "minItems": 2, "maxItems": 2 }
+      }
+    },
+    "fakeAgentResearchLoop": {
+      "allOf": [{ "$ref": "#/$defs/check" }],
+      "properties": {
+        "name": { "const": "fake_agent_research_loop" },
+        "subchecks": {
+          "type": "array",
+          "minItems": 10,
+          "maxItems": 10,
+          "prefixItems": [
+            { "properties": { "name": { "const": "production_extensions_loaded" } } },
+            { "properties": { "name": { "const": "full_text_search" } } },
+            { "properties": { "name": { "const": "evidence_read" } } },
+            { "properties": { "name": { "const": "structured_filter" } } },
+            { "properties": { "name": { "const": "script_extraction" } } },
+            { "properties": { "name": { "const": "trajectory_window" } } },
+            { "properties": { "name": { "const": "work_file_write" } } },
+            { "properties": { "name": { "const": "program_execution" } } },
+            { "properties": { "name": { "const": "work_file_read" } } },
+            { "properties": { "name": { "const": "terminating_submission" } } }
+          ],
+          "items": false
+        },
+        "evidence": { "minItems": 10, "maxItems": 10 }
+      }
+    },
+    "sandboxIsolation": {
+      "allOf": [{ "$ref": "#/$defs/check" }],
+      "properties": {
+        "name": { "const": "sandbox_isolation" },
+        "subchecks": {
+          "type": "array",
+          "minItems": 6,
+          "maxItems": 6,
+          "prefixItems": [
+            { "properties": { "name": { "const": "docker_network_none" } } },
+            { "properties": { "name": { "const": "loopback_only" } } },
+            { "properties": { "name": { "const": "evidence_readonly" } } },
+            { "properties": { "name": { "const": "host_write_denied" } } },
+            { "properties": { "name": { "const": "symlink_escape_denied" } } },
+            { "properties": { "name": { "const": "credentials_absent" } } }
+          ],
+          "items": false
+        },
+        "evidence": { "minItems": 6, "maxItems": 6 }
+      }
+    },
+    "resourceLimits": {
+      "allOf": [{ "$ref": "#/$defs/check" }],
+      "properties": {
+        "name": { "const": "resource_limits" },
+        "subchecks": {
+          "type": "array",
+          "minItems": 6,
+          "maxItems": 6,
+          "prefixItems": [
+            { "properties": { "name": { "const": "active_limits_match" } } },
+            { "properties": { "name": { "const": "tool_budget_exhausted" } } },
+            { "properties": { "name": { "const": "timeout_terminated" } } },
+            { "properties": { "name": { "const": "timeout_residual_absent" } } },
+            { "properties": { "name": { "const": "output_bounded" } } },
+            { "properties": { "name": { "const": "output_residual_absent" } } }
+          ],
+          "items": false
+        },
+        "evidence": { "minItems": 6, "maxItems": 6 }
+      }
+    },
+    "structuredSubmission": {
+      "allOf": [{ "$ref": "#/$defs/check" }],
+      "properties": {
+        "name": { "const": "structured_submission" },
+        "subchecks": {
+          "type": "array",
+          "minItems": 8,
+          "maxItems": 8,
+          "prefixItems": [
+            { "properties": { "name": { "const": "valid_production_submission" } } },
+            { "properties": { "name": { "const": "false_reference_rejected" } } },
+            { "properties": { "name": { "const": "single_trajectory_repeat_rejected" } } },
+            { "properties": { "name": { "const": "wrong_denominator_rejected" } } },
+            { "properties": { "name": { "const": "missing_counterexample_search_rejected" } } },
+            { "properties": { "name": { "const": "unknown_derivation_rejected" } } },
+            { "properties": { "name": { "const": "duplicate_submission_rejected" } } },
+            { "properties": { "name": { "const": "post_submission_action_rejected" } } }
+          ],
+          "items": false
+        },
+        "evidence": { "minItems": 8, "maxItems": 8 }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "const": "passed" } } },
+      "then": {
+        "properties": {
+          "corpus": {
+            "properties": {
+              "corpus_id": { "$ref": "#/$defs/nonEmptyString" },
+              "content_sha256": { "$ref": "#/$defs/sha256" },
+              "baseline_sha256": { "$ref": "#/$defs/sha256" },
+              "execution_ids": { "minItems": 2 }
+            }
+          },
+          "sandbox": {
+            "properties": {
+              "preflight_available": { "const": true },
+              "image_id": {
+                "type": "string",
+                "pattern": "^sha256:[0-9a-f]{64}$"
+              },
+              "active_config": { "$ref": "#/$defs/activeConfig" },
+              "active_config_sha256": { "$ref": "#/$defs/sha256" }
+            }
+          },
+          "execution_identity": { "$ref": "#/$defs/executionIdentity" },
+          "execution_identity_sha256": { "$ref": "#/$defs/sha256" },
+          "checks": {
+            "items": {
+              "properties": { "status": { "const": "passed" } }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "checks": {
+            "contains": {
+              "properties": { "status": { "const": "failed" } }
+            },
+            "minContains": 1
+          }
+        }
+      }
+    }
+  ]
+}

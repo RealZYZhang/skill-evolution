@@ -1,0 +1,10 @@
+{
+  "schema": "prompt.approval.v1",
+  "status": "approved",
+  "prompt_id": "analysis.research-harness-context",
+  "version": "1",
+  "prompt_file": "research-harness-context-v1.json",
+  "content_sha256": "95faacd149069424dba4eeae02a450aa1d510a9602aeb271ce6fc684e1cb38b4",
+  "approved_by": "project-owner",
+  "approved_at": "2026-08-17T07:02:26+00:00"
+}

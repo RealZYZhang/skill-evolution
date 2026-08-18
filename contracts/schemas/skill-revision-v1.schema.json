@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:skill-evolution:schema:skill-revision:v1",
+  "title": "Immutable Skill package revision",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "skill_id",
+    "revision_id",
+    "package_sha256",
+    "entrypoint_sha256",
+    "contract",
+    "lifecycle",
+    "package_path",
+    "inventory",
+    "captured_at",
+    "legacy_identity"
+  ],
+  "properties": {
+    "schema": {"const": "skill.revision.v1"},
+    "skill_id": {"type": "string", "minLength": 1},
+    "revision_id": {"type": "string", "minLength": 1},
+    "package_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "entrypoint_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "schema", "version", "status", "sha256"],
+      "properties": {
+        "path": {"type": ["string", "null"]},
+        "schema": {"type": ["string", "null"]},
+        "version": {"type": ["string", "null"]},
+        "status": {
+          "enum": ["approved", "proposed", "missing_at_execution"]
+        },
+        "sha256": {
+          "anyOf": [
+            {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+            {"type": "null"}
+          ]
+        }
+      }
+    },
+    "lifecycle": {
+      "enum": ["active", "historical", "candidate", "retired"]
+    },
+    "package_path": {"type": "string", "minLength": 1},
+    "inventory": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "bytes", "sha256"],
+        "properties": {
+          "path": {"type": "string", "minLength": 1},
+          "bytes": {"type": "integer", "minimum": 0},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    },
+    "captured_at": {"type": "string", "minLength": 1},
+    "legacy_identity": {"type": ["object", "null"]}
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "schema": "prompt.approval.v1",
+  "status": "approved",
+  "prompt_id": "analysis.error-identification",
+  "version": "1",
+  "prompt_file": "error-identification-v1.md",
+  "content_sha256": "e5d23618e8c52c57735f17b1c35c01eb9233a5cfc6d5657b4b9885a50974fc63",
+  "approved_by": "project-owner",
+  "approved_at": "2026-08-17T07:02:16+00:00"
+}

@@ -1,0 +1,7 @@
+# Purpose: Authoritative, non-secret project defaults for Pi Agent execution.
+# Credentials remain in the Pi user configuration and must never be added here.
+schema: skill-evolution.config.v1
+pi_agent:
+  provider: deepseek
+  model: deepseek-v4-pro
+  thinking: off

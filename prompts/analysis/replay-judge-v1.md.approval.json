@@ -1,0 +1,10 @@
+{
+  "schema": "prompt.approval.v1",
+  "status": "proposed",
+  "prompt_id": "analysis.replay-judge",
+  "version": "1",
+  "prompt_file": "replay-judge-v1.md",
+  "content_sha256": null,
+  "approved_by": null,
+  "approved_at": null
+}

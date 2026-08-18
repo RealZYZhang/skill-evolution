@@ -1,0 +1,4 @@
+interface:
+  display_name: "单轨迹错误分析"
+  short_description: "先做确定性预检，再分析单条轨迹的错误、恢复与因果关系"
+  default_prompt: "Use $analyze-single-trajectory to inspect one action-level trajectory and explain only the errors that require semantic judgment."

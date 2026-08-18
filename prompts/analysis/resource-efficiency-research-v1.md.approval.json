@@ -1,0 +1,10 @@
+{
+  "schema": "prompt.approval.v1",
+  "status": "approved",
+  "prompt_id": "analysis.resource-efficiency-research",
+  "version": "1",
+  "prompt_file": "resource-efficiency-research-v1.md",
+  "content_sha256": "d71046beb2b70486b2bc25e9a4d8c3d52d0b7f48638ccf65a3c4228d7a81df57",
+  "approved_by": "project-owner",
+  "approved_at": "2026-08-16T05:34:14+00:00"
+}

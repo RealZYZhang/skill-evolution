@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:skill-evolution:schema:execution-set:v1",
+  "title": "Same-revision Skill execution collection",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "set_id",
+    "skill_id",
+    "revision_id",
+    "purpose",
+    "status",
+    "execution_ids",
+    "task",
+    "runtime",
+    "provenance",
+    "created_at",
+    "ended_at"
+  ],
+  "properties": {
+    "schema": {"const": "execution.set.v1"},
+    "set_id": {"type": "string", "minLength": 1},
+    "skill_id": {"type": "string", "minLength": 1},
+    "revision_id": {"type": "string", "minLength": 1},
+    "purpose": {"enum": ["replay", "evaluation", "diagnostic"]},
+    "status": {
+      "enum": [
+        "planned",
+        "running",
+        "completed",
+        "completed_with_failures",
+        "failed"
+      ]
+    },
+    "execution_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "task": {"type": "object"},
+    "runtime": {"type": "object"},
+    "provenance": {"type": "object"},
+    "created_at": {"type": "string", "minLength": 1},
+    "ended_at": {"type": ["string", "null"]}
+  }
+}

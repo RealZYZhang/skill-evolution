@@ -1,0 +1,185 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "research.harness_acceptance.v1",
+  "title": "Deterministic multi-Trajectory Harness acceptance report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "content_sha256",
+    "validator_version",
+    "status",
+    "started_at",
+    "ended_at",
+    "corpus",
+    "sandbox",
+    "checks"
+  ],
+  "properties": {
+    "schema": { "const": "research.harness_acceptance.v1" },
+    "content_sha256": { "$ref": "#/$defs/sha256" },
+    "validator_version": {
+      "const": "research-harness-validator-2026-08-14.v1"
+    },
+    "status": { "enum": ["passed", "failed"] },
+    "started_at": { "type": "string", "format": "date-time" },
+    "ended_at": { "type": "string", "format": "date-time" },
+    "corpus": { "$ref": "#/$defs/corpus" },
+    "sandbox": { "$ref": "#/$defs/sandbox" },
+    "checks": {
+      "type": "array",
+      "minItems": 7,
+      "maxItems": 7,
+      "prefixItems": [
+        { "$ref": "#/$defs/corpusPreflight" },
+        { "$ref": "#/$defs/navigationIndex" },
+        { "$ref": "#/$defs/evidenceRoundtrip" },
+        { "$ref": "#/$defs/fakeAgentResearchLoop" },
+        { "$ref": "#/$defs/sandboxIsolation" },
+        { "$ref": "#/$defs/resourceLimits" },
+        { "$ref": "#/$defs/structuredSubmission" }
+      ],
+      "items": false
+    }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "nullableSha256": {
+      "oneOf": [{ "$ref": "#/$defs/sha256" }, { "type": "null" }]
+    },
+    "nonEmptyString": { "type": "string", "minLength": 1 },
+    "corpus": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "corpus_id",
+        "content_sha256",
+        "baseline_sha256",
+        "execution_ids"
+      ],
+      "properties": {
+        "corpus_id": {
+          "oneOf": [{ "$ref": "#/$defs/nonEmptyString" }, { "type": "null" }]
+        },
+        "content_sha256": { "$ref": "#/$defs/nullableSha256" },
+        "baseline_sha256": { "$ref": "#/$defs/nullableSha256" },
+        "execution_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/nonEmptyString" }
+        }
+      }
+    },
+    "limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cpus",
+        "memory",
+        "pids",
+        "open_files",
+        "work_bytes",
+        "temporary_bytes",
+        "command_timeout_seconds",
+        "max_output_bytes",
+        "max_tool_calls",
+        "max_concurrent_tool_calls",
+        "max_total_output_bytes",
+        "max_total_command_milliseconds"
+      ],
+      "properties": {
+        "cpus": { "type": "number", "exclusiveMinimum": 0 },
+        "memory": { "$ref": "#/$defs/nonEmptyString" },
+        "pids": { "type": "integer", "minimum": 1 },
+        "open_files": { "type": "integer", "minimum": 1 },
+        "work_bytes": { "type": "integer", "minimum": 1 },
+        "temporary_bytes": { "type": "integer", "minimum": 1 },
+        "command_timeout_seconds": { "type": "integer", "minimum": 1 },
+        "max_output_bytes": { "type": "integer", "minimum": 1 },
+        "max_tool_calls": { "type": "integer", "minimum": 1 },
+        "max_concurrent_tool_calls": { "type": "integer", "minimum": 1 },
+        "max_total_output_bytes": { "type": "integer", "minimum": 1 },
+        "max_total_command_milliseconds": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "sandbox": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "backend",
+        "image",
+        "image_id",
+        "preflight_available",
+        "limits"
+      ],
+      "properties": {
+        "backend": { "const": "docker_research_lab" },
+        "image": { "$ref": "#/$defs/nonEmptyString" },
+        "image_id": {
+          "oneOf": [
+            { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+            { "type": "null" }
+          ]
+        },
+        "preflight_available": { "type": "boolean" },
+        "limits": { "$ref": "#/$defs/limits" }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "assertion", "observed", "sha256"],
+      "properties": {
+        "kind": { "const": "observed_fact" },
+        "assertion": { "$ref": "#/$defs/nonEmptyString" },
+        "observed": { "$ref": "#/$defs/nonEmptyString" },
+        "sha256": { "$ref": "#/$defs/nullableSha256" }
+      }
+    },
+    "check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "status", "evidence", "error"],
+      "properties": {
+        "name": { "type": "string" },
+        "status": { "enum": ["passed", "failed"] },
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/evidence" }
+        },
+        "error": {
+          "oneOf": [{ "$ref": "#/$defs/nonEmptyString" }, { "type": "null" }]
+        }
+      }
+    },
+    "corpusPreflight": {
+      "allOf": [{ "$ref": "#/$defs/check" }],
+      "properties": { "name": { "const": "corpus_preflight" } }
+    },
+    "navigationIndex": {
+      "allOf": [{ "$ref": "#/$defs/check" }],
+      "properties": { "name": { "const": "navigation_index" } }
+    },
+    "evidenceRoundtrip": {
+      "allOf": [{ "$ref": "#/$defs/check" }],
+      "properties": { "name": { "const": "evidence_roundtrip" } }
+    },
+    "fakeAgentResearchLoop": {
+      "allOf": [{ "$ref": "#/$defs/check" }],
+      "properties": { "name": { "const": "fake_agent_research_loop" } }
+    },
+    "sandboxIsolation": {
+      "allOf": [{ "$ref": "#/$defs/check" }],
+      "properties": { "name": { "const": "sandbox_isolation" } }
+    },
+    "resourceLimits": {
+      "allOf": [{ "$ref": "#/$defs/check" }],
+      "properties": { "name": { "const": "resource_limits" } }
+    },
+    "structuredSubmission": {
+      "allOf": [{ "$ref": "#/$defs/check" }],
+      "properties": { "name": { "const": "structured_submission" } }
+    }
+  }
+}

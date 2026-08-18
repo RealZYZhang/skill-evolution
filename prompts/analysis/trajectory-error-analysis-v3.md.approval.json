@@ -1,0 +1,10 @@
+{
+  "schema": "prompt.approval.v1",
+  "status": "proposed",
+  "prompt_id": "analysis.trajectory-error",
+  "version": "3",
+  "prompt_file": "trajectory-error-analysis-v3.md",
+  "content_sha256": null,
+  "approved_by": null,
+  "approved_at": null
+}

@@ -1,0 +1,10 @@
+{
+  "schema": "prompt.approval.v1",
+  "status": "proposed",
+  "prompt_id": "execution.document-html-visualizer",
+  "version": "2",
+  "prompt_file": "document-html-visualizer-v2.md",
+  "content_sha256": null,
+  "approved_by": null,
+  "approved_at": null
+}

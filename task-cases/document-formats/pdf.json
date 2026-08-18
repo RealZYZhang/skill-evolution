@@ -1,0 +1,21 @@
+{
+  "schema": "task.case.v1",
+  "task_case_id": "document-formats-pdf-v1",
+  "delivery": "file",
+  "input": {
+    "path": "../../fixtures/document-formats/canonical.pdf"
+  },
+  "expected_artifacts": [
+    "output.html"
+  ],
+  "capability_tags": [
+    "format:pdf",
+    "delivery:file",
+    "content:canonical-format-isolation",
+    "pdf:selectable-text"
+  ],
+  "budget": {
+    "timeout_seconds": 900,
+    "max_expected_runs": 1
+  }
+}

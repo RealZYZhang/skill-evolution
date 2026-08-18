@@ -1,0 +1,171 @@
+<!doctype html>
+<!-- Purpose: static shell for the read-only Skill Explorer. -->
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Skill Evolution · Skill 管理器</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">跳到主要内容</a>
+  <header class="app-header">
+    <div class="brand-lockup">
+      <span class="brand-mark" aria-hidden="true">SE</span>
+      <div>
+        <p class="eyebrow">Skill Evolution</p>
+        <h1>Skill 管理器</h1>
+        <p class="header-note">从 Skill 查看每次执行、trajectory 与单 trajectory 分析</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <span class="read-only-badge">只读 · 本机</span>
+      <button id="refresh-button" class="button" type="button">刷新</button>
+    </div>
+  </header>
+
+  <main id="main-content" class="app-layout">
+    <aside class="skill-rail" aria-labelledby="skill-heading">
+      <div class="rail-heading">
+        <div>
+          <p class="eyebrow">层级导航</p>
+          <h2 id="skill-heading">Skill 列表 <span class="help-mark" tabindex="0" role="note" aria-label="一组可复用的任务说明和配套文件，告诉 AI 如何完成一类工作。" data-tooltip="一组可复用的任务说明和配套文件，告诉 AI 如何完成一类工作。">?</span></h2>
+        </div>
+        <span id="skill-count" class="count-label">0</span>
+      </div>
+      <label class="search-box">
+        <span class="sr-only">搜索 Skill</span>
+        <input id="skill-search" type="search" placeholder="搜索 Skill">
+      </label>
+      <div id="skill-list" class="skill-list"></div>
+    </aside>
+
+    <section class="workspace" aria-live="polite">
+      <div id="status-banner" class="status-banner" role="status">
+        正在读取 Skill 目录…
+      </div>
+
+      <header id="skill-header" class="skill-header" hidden>
+        <div>
+          <p id="skill-kicker" class="status-line"></p>
+          <h2 id="skill-title"></h2>
+          <p id="skill-meta" class="muted"></p>
+        </div>
+        <p class="scope-note">运行事实与分析结论分层展示；无效分析不会生成 Skill 建议。</p>
+      </header>
+
+      <nav id="skill-tabs" class="tabs" aria-label="Skill 内容" hidden>
+        <button class="tab-button is-active" type="button" data-skill-tab="home"
+                aria-pressed="true">Skill 首页</button>
+        <button class="tab-button" type="button" data-skill-tab="executions"
+                aria-pressed="false">执行记录</button>
+        <button class="tab-button" type="button" data-skill-tab="multi"
+                aria-pressed="false">多 trajectory 分析</button>
+        <button class="tab-button" type="button" data-skill-tab="improvements"
+                aria-pressed="false">改进方案</button>
+      </nav>
+
+      <section id="panel-home" class="skill-panel">
+        <div id="skill-summary" class="metric-grid"></div>
+        <div class="two-column">
+          <article class="surface">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Skill 内容</p>
+                <h3>Skill 说明 <span class="help-mark" tabindex="0" role="note" aria-label="一组可复用的任务说明和配套文件，告诉 AI 如何完成一类工作。" data-tooltip="一组可复用的任务说明和配套文件，告诉 AI 如何完成一类工作。">?</span></h3>
+              </div>
+              <span id="current-revision" class="tag"></span>
+            </div>
+            <div id="skill-description" class="document-preview"></div>
+          </article>
+          <article class="surface">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">使用边界</p>
+                <h3>Skill Contract <span class="help-mark" tabindex="0" role="note" aria-label="人工确认的使用边界，说明 Skill 可使用的工具、权限、网络和依赖。" data-tooltip="人工确认的使用边界，说明 Skill 可使用的工具、权限、网络和依赖。">?</span></h3>
+              </div>
+              <span id="contract-status" class="status-badge"></span>
+            </div>
+            <div id="contract-summary" class="definition-list"></div>
+          </article>
+        </div>
+        <article class="surface">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">变化记录</p>
+              <h3>Skill 版本历史 <span class="help-mark" tabindex="0" role="note" aria-label="某一时刻冻结保存的 Skill 内容。Skill 发生变化就会产生新版本，编号用于准确对应当时使用的内容。" data-tooltip="某一时刻冻结保存的 Skill 内容。Skill 发生变化就会产生新版本，编号用于准确对应当时使用的内容。">?</span></h3>
+            </div>
+          </div>
+          <div id="revision-list" class="revision-list"></div>
+        </article>
+      </section>
+
+      <section id="panel-executions" class="skill-panel" hidden>
+        <article class="surface filters">
+          <label><span>Skill 版本 <span class="help-mark" tabindex="0" role="note" aria-label="某一时刻冻结保存的 Skill 内容。Skill 发生变化就会产生新版本，编号用于准确对应当时使用的内容。" data-tooltip="某一时刻冻结保存的 Skill 内容。Skill 发生变化就会产生新版本，编号用于准确对应当时使用的内容。">?</span></span><select id="revision-filter"><option value="">全部</option></select></label>
+          <label><span>执行状态</span><select id="execution-status-filter"><option value="">全部</option></select></label>
+          <label><span>测试任务 <span class="help-mark" tabindex="0" role="note" aria-label="用于触发并检查一次执行的输入要求。" data-tooltip="用于触发并检查一次执行的输入要求。">?</span></span><input id="task-filter" type="search" placeholder="搜索任务名称"></label>
+          <label><span>执行批次 <span class="help-mark" tabindex="0" role="note" aria-label="为同一个测试目标连续运行的一组执行，用来观察表现是否稳定。" data-tooltip="为同一个测试目标连续运行的一组执行，用来观察表现是否稳定。">?</span></span><select id="set-filter"><option value="">全部</option></select></label>
+        </article>
+        <div class="execution-layout">
+          <article class="surface execution-browser">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">运行记录</p>
+                <h3>执行 <span class="help-mark" tabindex="0" role="note" aria-label="Skill 接到一个具体任务后，从开始到结束的一次完整运行。" data-tooltip="Skill 接到一个具体任务后，从开始到结束的一次完整运行。">?</span></h3>
+              </div>
+              <span id="execution-count" class="count-label">0</span>
+            </div>
+            <div id="execution-list" class="execution-list"></div>
+          </article>
+          <article id="execution-detail" class="surface execution-detail">
+            <p class="empty-state">选择一次执行，查看任务 prompt、输入、输出、trajectory 和分析。</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="panel-multi" class="skill-panel" hidden>
+        <div class="section-heading standalone-heading">
+          <div>
+            <p class="eyebrow">跨多次执行</p>
+            <h3>多 trajectory 分析 <span class="help-mark" tabindex="0" role="note" aria-label="把同一 Skill 版本的多次 trajectory 放在一起，识别并分析影响可复用性与可靠性的错误。" data-tooltip="把同一 Skill 版本的多次 trajectory 放在一起，识别并分析影响可复用性与可靠性的错误。">?</span></h3>
+            <p class="muted">展示错误清单，以及每个错误按行为、条件、一致性与资源维度给出的分析报告。</p>
+          </div>
+        </div>
+        <div id="multi-analysis-list" class="analysis-grid"></div>
+        <article id="multi-analysis-detail" class="surface" hidden></article>
+      </section>
+
+      <section id="panel-improvements" class="skill-panel" hidden>
+        <div class="section-heading standalone-heading">
+          <div><p class="eyebrow">待验证的修改</p><h3>改进方案 <span class="help-mark" tabindex="0" role="note" aria-label="基于可信分析提出、尚待验证和批准的 Skill 修改方案。" data-tooltip="基于可信分析提出、尚待验证和批准的 Skill 修改方案。">?</span></h3>
+            <p class="muted">集中查看待验证的 Skill 修改、效果比较和人工复核。</p></div>
+        </div>
+        <div id="improvement-list" class="analysis-grid"></div>
+      </section>
+    </section>
+  </main>
+
+  <template id="execution-detail-template">
+    <div class="execution-title-row">
+      <div><p class="eyebrow">执行</p><h3 data-field="execution-title"></h3></div>
+      <span data-field="execution-status" class="status-badge"></span>
+    </div>
+    <p data-field="execution-meta" class="muted"></p>
+    <nav class="detail-tabs" aria-label="执行内容">
+      <button class="detail-tab is-active" type="button" data-detail-tab="overview">概览</button>
+      <button class="detail-tab" type="button" data-detail-tab="prompt">任务 prompt</button>
+      <button class="detail-tab" type="button" data-detail-tab="input">输入</button>
+      <button class="detail-tab" type="button" data-detail-tab="output">输出</button>
+      <button class="detail-tab" type="button" data-detail-tab="trajectory">trajectory</button>
+      <button class="detail-tab" type="button" data-detail-tab="analysis">单 trajectory 分析</button>
+      <button class="detail-tab" type="button" data-detail-tab="setup">运行设置</button>
+    </nav>
+    <div data-field="detail-content" class="detail-content"></div>
+  </template>
+
+  <noscript><p class="noscript-message">此查看器需要 JavaScript；本地数据不会被修改。</p></noscript>
+</body>
+</html>

@@ -1,0 +1,111 @@
+{
+  "schema": "skill.capability_contract.v1",
+  "skill_id": "document-html-visualizer",
+  "version": "1",
+  "status": "proposed",
+  "approved_by": null,
+  "approved_at": null,
+  "capabilities": [
+    {
+      "id": "file-markdown-to-html",
+      "claim": "将 Markdown 文件转换为自包含、可导航的 HTML。",
+      "delivery_modes": [
+        "file"
+      ],
+      "formats": [
+        "md"
+      ],
+      "required_evidence": [
+        "execution completed",
+        "all expected artifacts exist",
+        "source hierarchy and key facts are measurable in output",
+        "basic HTML, anchors, accessibility references, and dependencies checked"
+      ]
+    },
+    {
+      "id": "file-text-to-html",
+      "claim": "将纯文本文件转换为自包含、可导航的 HTML。",
+      "delivery_modes": [
+        "file"
+      ],
+      "formats": [
+        "txt"
+      ],
+      "required_evidence": [
+        "execution completed",
+        "all expected artifacts exist",
+        "source facts are measurable in output",
+        "basic HTML and dependencies checked"
+      ]
+    },
+    {
+      "id": "file-docx-to-html",
+      "claim": "提取 DOCX 的标题、正文和表格并转换为自包含 HTML。",
+      "delivery_modes": [
+        "file"
+      ],
+      "formats": [
+        "docx"
+      ],
+      "required_evidence": [
+        "execution completed",
+        "headings, numeric facts, URLs, and tables are preserved",
+        "extraction limitations are disclosed",
+        "basic HTML and dependencies checked"
+      ]
+    },
+    {
+      "id": "file-pdf-to-html",
+      "claim": "提取含可选文本 PDF 的结构和事实并转换为自包含 HTML。",
+      "delivery_modes": [
+        "file"
+      ],
+      "formats": [
+        "pdf"
+      ],
+      "required_evidence": [
+        "execution completed",
+        "headings, numeric facts, and URLs are preserved",
+        "extraction or OCR limitations are disclosed",
+        "basic HTML and dependencies checked"
+      ]
+    },
+    {
+      "id": "inline-text-to-html",
+      "claim": "将直接粘贴的文本转换为自包含、可导航的 HTML。",
+      "delivery_modes": [
+        "inline_text"
+      ],
+      "formats": [
+        "inline_text"
+      ],
+      "required_evidence": [
+        "execution completed without a fabricated input file",
+        "all expected artifacts exist",
+        "source facts are measurable in output",
+        "basic HTML and dependencies checked"
+      ]
+    },
+    {
+      "id": "long-document-navigation",
+      "claim": "长文档提供标题导航、稳定本地锚点、搜索或等价的快速定位能力。",
+      "delivery_modes": [
+        "file",
+        "inline_text"
+      ],
+      "formats": [
+        "md",
+        "txt",
+        "docx",
+        "pdf",
+        "inline_text"
+      ],
+      "required_evidence": [
+        "long-document TaskCase",
+        "valid local anchors",
+        "observable navigation structure",
+        "search or equivalent location control"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "schema": "skill.contract.v2",
+  "skill_id": "document-html-visualizer",
+  "version": "2.0.0",
+  "status": "approved",
+  "owner": "project-owner",
+  "approved_by": "project-owner",
+  "approved_at": "2026-08-06T08:00:11Z",
+  "supersedes": {
+    "schema": "skill.capability_contract.v1",
+    "version": "1",
+    "path": "contracts/skills/document-html-visualizer-v1.json"
+  },
+  "runtime": {
+    "required_tools": [
+      "filesystem.read",
+      "filesystem.write"
+    ],
+    "allowed_tools": [
+      "filesystem.read",
+      "filesystem.write",
+      "process.execute"
+    ],
+    "allowed_permissions": [
+      "workspace.input.read",
+      "workspace.artifact.write",
+      "workspace.command.execute"
+    ],
+    "network": "forbidden",
+    "credentials_in_sandbox": false,
+    "dependencies": [
+      "document.extract.docx",
+      "document.extract.pdf.selectable-text"
+    ],
+    "assets": []
+  },
+  "evaluation": {
+    "suite_refs": [
+      "document-html-visualizer-v2"
+    ]
+  }
+}

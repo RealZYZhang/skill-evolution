@@ -1,0 +1,10 @@
+{
+  "schema": "prompt.approval.v1",
+  "status": "approved",
+  "prompt_id": "analysis.error-analyst",
+  "version": "1",
+  "prompt_file": "error-analyst-v1.md",
+  "content_sha256": "3a3a335b19572f1d441b803fb9a8fc22e5bb258f704791c0a96fa4c55c83275b",
+  "approved_by": "project-owner",
+  "approved_at": "2026-08-17T09:11:02+00:00"
+}

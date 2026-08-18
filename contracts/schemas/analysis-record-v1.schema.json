@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:skill-evolution:schema:analysis-record:v1",
+  "title": "Skill hierarchy analysis attachment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "analysis_id",
+    "skill_id",
+    "revision_id",
+    "scope",
+    "execution_id",
+    "execution_set_id",
+    "kind",
+    "producer",
+    "status",
+    "input_refs",
+    "result_refs",
+    "attempts",
+    "created_at",
+    "ended_at",
+    "provenance"
+  ],
+  "properties": {
+    "schema": {"const": "analysis.record.v1"},
+    "analysis_id": {"type": "string", "minLength": 1},
+    "skill_id": {"type": "string", "minLength": 1},
+    "revision_id": {"type": "string", "minLength": 1},
+    "scope": {"enum": ["single_execution", "execution_set"]},
+    "execution_id": {"type": ["string", "null"]},
+    "execution_set_id": {"type": ["string", "null"]},
+    "kind": {
+      "enum": [
+        "precheck",
+        "trajectory_error",
+        "trajectory_profile",
+        "artifact_comparison",
+        "harness",
+        "multi_role",
+        "multi_trajectory",
+        "trace_error",
+        "trace_profile",
+        "multi_trace"
+      ]
+    },
+    "producer": {"enum": ["deterministic", "agent", "composite"]},
+    "status": {
+      "enum": [
+        "planned",
+        "running",
+        "accepted",
+        "unavailable",
+        "failed",
+        "invalid_output",
+        "timed_out",
+        "indeterminate",
+        "inconclusive"
+      ]
+    },
+    "input_refs": {"type": "array", "items": {"type": "object"}},
+    "result_refs": {"type": "array", "items": {"type": "object"}},
+    "attempts": {"type": "array", "items": {"type": "object"}},
+    "created_at": {"type": "string", "minLength": 1},
+    "ended_at": {"type": ["string", "null"]},
+    "provenance": {"type": ["object", "null"]}
+  }
+}

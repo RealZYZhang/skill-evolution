@@ -1,0 +1,33 @@
+{
+  "schema": "research.validation_benchmark.v1",
+  "benchmark_id": "document-html-visualizer-five-trajectory-v1",
+  "title": "Document HTML visualizer five-Trajectory hidden validation benchmark",
+  "status": "approved",
+  "skill_id": "document-html-visualizer",
+  "revision_id": "rev-d06ece0ddc22cb38",
+  "execution_ids": [
+    "20260725T154836Z-a58d6715",
+    "20260725T155939Z-885eacfe",
+    "20260725T160532Z-62d5c057",
+    "20260725T161117Z-551972b5",
+    "20260725T161732Z-9b0938dc"
+  ],
+  "required_discoveries": [
+    {
+      "discovery_id": "temporary-generation-script-or-flow",
+      "description": "At a comparable logical stage, at least two trajectories independently construct temporary generation scripts or generation flows with a similar purpose.",
+      "minimum_supporting_trajectory_count": 2,
+      "required_findings": [
+        "common_logical_stage",
+        "common_purpose",
+        "script_or_flow_differences",
+        "before_after_effect",
+        "non_adopting_trajectories_or_counterexample_scope",
+        "raw_evidence_locations"
+      ]
+    }
+  ],
+  "owner": "project-owner",
+  "approved_by": "project-owner",
+  "approved_at": "2026-08-14T12:00:00+08:00"
+}

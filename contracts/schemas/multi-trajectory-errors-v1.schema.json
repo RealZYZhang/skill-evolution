@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:skill-evolution:schema:multi-trajectory-errors:v1",
+  "title": "Error-centric multi-trajectory analysis projection",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "analysis_id",
+    "skill_id",
+    "revision_id",
+    "generated_at",
+    "scope",
+    "errors",
+    "reports",
+    "limitations"
+  ],
+  "properties": {
+    "schema": {"const": "analysis.multi_trajectory_errors.v1"},
+    "analysis_id": {"type": "string", "minLength": 1},
+    "skill_id": {"type": "string", "minLength": 1},
+    "revision_id": {"type": "string", "minLength": 1},
+    "generated_at": {"type": "string", "minLength": 1},
+    "scope": {
+      "type": "object",
+      "required": ["eligible_trajectory_ids", "reviewed_trajectory_ids", "counterexample_search"],
+      "properties": {
+        "eligible_trajectory_ids": {"type": "array", "items": {"type": "string"}},
+        "reviewed_trajectory_ids": {"type": "array", "items": {"type": "string"}},
+        "counterexample_search": {"type": "string"}
+      }
+    },
+    "errors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "error_id",
+          "title",
+          "summary",
+          "anchor_evidence",
+          "observed_trajectory_ids",
+          "checked_absent_trajectory_ids",
+          "suggested_dimensions"
+        ],
+        "properties": {
+          "error_id": {"type": "string", "minLength": 1},
+          "title": {"type": "string", "minLength": 1},
+          "summary": {"type": "string", "minLength": 1},
+          "anchor_evidence": {"type": "array"},
+          "observed_trajectory_ids": {"type": "array", "items": {"type": "string"}},
+          "checked_absent_trajectory_ids": {"type": "array", "items": {"type": "string"}},
+          "suggested_dimensions": {"type": "array", "items": {"type": "string"}},
+          "notes": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "reports": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["error_id", "dimensions", "limitations"],
+        "properties": {
+          "error_id": {"type": "string", "minLength": 1},
+          "dimensions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "dimension",
+                "claim",
+                "observed_trajectory_ids",
+                "checked_absent_trajectory_ids",
+                "evidence",
+                "counterevidence",
+                "confidence",
+                "derivation_ids",
+                "limitations"
+              ],
+              "properties": {
+                "dimension": {"enum": ["behavior", "conditions", "consistency", "resource"]},
+                "claim": {"type": "string", "minLength": 1},
+                "observed_trajectory_ids": {"type": "array", "items": {"type": "string"}},
+                "checked_absent_trajectory_ids": {"type": "array", "items": {"type": "string"}},
+                "evidence": {"type": "array"},
+                "counterevidence": {"type": "array"},
+                "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+                "derivation_ids": {"type": "array", "items": {"type": "string"}},
+                "limitations": {"type": "array", "items": {"type": "string"}}
+              }
+            }
+          },
+          "limitations": {"type": "array", "items": {"type": "string"}},
+          "validation_warnings": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
+    "limitations": {"type": "array", "items": {"type": "string"}}
+  }
+}

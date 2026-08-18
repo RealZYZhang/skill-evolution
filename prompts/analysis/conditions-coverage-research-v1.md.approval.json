@@ -1,0 +1,10 @@
+{
+  "schema": "prompt.approval.v1",
+  "status": "approved",
+  "prompt_id": "analysis.conditions-coverage-research",
+  "version": "1",
+  "prompt_file": "conditions-coverage-research-v1.md",
+  "content_sha256": "62bfaeae0bac1c015c840afc9496300e108507bbee060462e51c15dc5b812b20",
+  "approved_by": "project-owner",
+  "approved_at": "2026-08-16T05:34:14+00:00"
+}

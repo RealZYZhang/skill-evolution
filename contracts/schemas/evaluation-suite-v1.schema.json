@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skill-evolution.local/contracts/evaluation-suite-v1.schema.json",
+  "title": "EvaluationSuite v1",
+  "description": "Strict owner-reviewed mapping from an evaluated Skill to TaskCases, coverage dimensions, and condition-analysis readiness thresholds.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "suite_id",
+    "skill_id",
+    "version",
+    "status",
+    "owner",
+    "approved_by",
+    "approved_at",
+    "task_cases",
+    "coverage_dimensions",
+    "readiness"
+  ],
+  "properties": {
+    "schema": {"const": "evaluation.suite.v1"},
+    "suite_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:[.-][a-z0-9]+)*$"
+    },
+    "skill_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:[.-][a-z0-9]+)*$"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "status": {"enum": ["proposed", "approved"]},
+    "owner": {"type": "string", "minLength": 1},
+    "approved_by": {"type": ["string", "null"], "minLength": 1},
+    "approved_at": {"type": ["string", "null"], "minLength": 1},
+    "task_cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["task_case_id", "path", "conditions"],
+        "properties": {
+          "task_case_id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9]*(?:[.-][a-z0-9]+)*$"
+          },
+          "path": {"type": "string", "minLength": 1},
+          "conditions": {
+            "type": "object",
+            "minProperties": 1,
+            "additionalProperties": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    },
+    "coverage_dimensions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "required_values"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9]*(?:[.-][a-z0-9]+)*$"
+          },
+          "required_values": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {"type": "string", "minLength": 1}
+          }
+        }
+      }
+    },
+    "readiness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "minimum_distinct_condition_groups",
+        "minimum_samples_per_condition_group"
+      ],
+      "properties": {
+        "minimum_distinct_condition_groups": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "minimum_samples_per_condition_group": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "approved"}}},
+      "then": {
+        "properties": {
+          "approved_by": {"type": "string", "minLength": 1},
+          "approved_at": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"status": {"const": "proposed"}}},
+      "then": {
+        "properties": {
+          "approved_by": {"const": null},
+          "approved_at": {"const": null}
+        }
+      }
+    }
+  ]
+}

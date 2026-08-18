@@ -1,0 +1,20 @@
+{
+  "schema": "task.case.v1",
+  "task_case_id": "document-formats-docx-v1",
+  "delivery": "file",
+  "input": {
+    "path": "../../fixtures/document-formats/canonical.docx"
+  },
+  "expected_artifacts": [
+    "output.html"
+  ],
+  "capability_tags": [
+    "format:docx",
+    "delivery:file",
+    "content:canonical-format-isolation"
+  ],
+  "budget": {
+    "timeout_seconds": 900,
+    "max_expected_runs": 1
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "schema": "skill.hierarchy_mapping.v1",
+  "title": "Approved legacy Skill identity mappings",
+  "mappings": [
+    {
+      "skill_id": "document-html-visualizer",
+      "source_suffixes": [
+        "skills/document-html-visualizer-skill"
+      ]
+    }
+  ]
+}

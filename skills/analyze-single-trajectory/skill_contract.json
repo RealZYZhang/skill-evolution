@@ -1,0 +1,39 @@
+{
+  "schema": "skill.contract.v2",
+  "skill_id": "analyze-single-trajectory",
+  "version": "1.0.0",
+  "status": "approved",
+  "owner": "project-owner",
+  "approved_by": "project-owner",
+  "approved_at": "2026-08-07T06:20:26.014+00:00",
+  "supersedes": null,
+  "runtime": {
+    "required_tools": [
+      "filesystem.read",
+      "filesystem.write",
+      "process.execute"
+    ],
+    "allowed_tools": [
+      "filesystem.read",
+      "filesystem.write",
+      "process.execute"
+    ],
+    "allowed_permissions": [
+      "workspace.artifact.write",
+      "workspace.command.execute",
+      "workspace.input.read"
+    ],
+    "network": "forbidden",
+    "credentials_in_sandbox": false,
+    "dependencies": [
+      "python.stdlib",
+      "skill-evolution.trajectory-precheck"
+    ],
+    "assets": []
+  },
+  "evaluation": {
+    "suite_refs": [
+      "analyze-single-trajectory-v1"
+    ]
+  }
+}

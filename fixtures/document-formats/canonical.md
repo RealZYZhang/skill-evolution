@@ -1,0 +1,28 @@
+# Skill Evolution Format Fixture
+
+- **Version:** 1.2
+- **Effective date:** 2026-07-26
+- **Replay budget:** 13 runs
+- **Reference:** https://example.org/skill-evolution/policy
+
+## Decision
+
+Automatic candidate replay must stop when sandbox preflight fails. It must never fall back to the host.
+
+## Constraints
+
+Correctness and capability coverage are hard constraints.
+Every candidate and failed attempt remains visible.
+Only a human may approve release of a candidate skill.
+
+## Metrics
+
+| Dimension | Baseline | Guardrail |
+| --- | --- | --- |
+| Correctness | Required | No regression |
+| Token usage | Measured by component | Report variance |
+| Duration | Measured per run | Report outliers |
+
+## Limitation
+
+Visual preference is not inferred from deterministic metrics; screenshots require human review.
